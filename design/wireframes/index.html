@@ -1,0 +1,1990 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kairos wireframes</title>
+<meta name="description" content="Low-fidelity, annotated wireframe board for the Kairos AI-native calendar prototype: screens, AI callouts and key user flows.">
+<style>
+/* ======================================================================
+   Kairos — low-fidelity wireframe board
+   Self-contained: no external fonts, scripts or images. Open by double-click.
+   Grayscale UI; the single accent (violet) marks AI elements only.
+   ====================================================================== */
+:root{
+  --ink:#1d1d1f;--ink2:#4a4a4f;--ink3:#6b6b70;--ink4:#a5a5ab;
+  --line:#c6c6cb;--line2:#e2e2e6;--fill:#ececef;--fill2:#f6f6f8;--paper:#fff;--board:#e4e4df;
+  --ai:#5b3fd1;--ai-ink:#4a2fc0;--ai-tint:#f1edff;--ai-line:#bdb0f4;--ai-wash:rgba(91,63,209,.09);
+  --h:38px; /* height of one hour in week grids */
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--board);color:var(--ink);font:13px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;padding:28px 24px 96px;-webkit-text-size-adjust:100%}
+a{color:inherit}
+h1,h2,h3,h4,h5,h6,p,ol,ul,dl,dd{margin:0}
+.wrap{max-width:1640px;margin:0 auto}
+.mut{color:var(--ink3)}
+.sp{flex:1}
+.rel{position:relative}
+
+/* ---------- board header, contents, key ---------- */
+.bh{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,.9fr) minmax(0,1.25fr);gap:16px;margin-bottom:40px;align-items:start}
+@media (max-width:1180px){.bh{grid-template-columns:minmax(0,1fr)}}
+.bh h1{font-size:28px;letter-spacing:-.015em;line-height:1.15}
+.bh h1 span{color:var(--ink3);font-weight:500}
+.bh .intro{margin-top:8px;color:var(--ink2);max-width:600px}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+.tag{font-size:11px;border:1px solid var(--line);background:var(--paper);border-radius:999px;padding:2px 9px;color:var(--ink2);text-decoration:none;white-space:nowrap}
+a.tag:hover{border-color:var(--ink)}
+.box{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:14px 16px}
+.box h2{font-size:12px;text-transform:uppercase;letter-spacing:.07em;color:var(--ink2);margin-bottom:8px}
+.toc ol{padding-left:24px}
+.toc li{margin:2px 0}
+.toc a{text-decoration:none;border-bottom:1px solid var(--line)}
+.toc a:hover{border-color:var(--ink)}
+.toc .fl{margin-top:10px;padding-top:8px;border-top:1px solid var(--line2);font-size:12px}
+.toc .fl a{display:inline-block;margin:2px 12px 2px 0}
+.keys{display:grid;grid-template-columns:60px minmax(0,1fr);gap:7px 10px;align-items:center;font-size:12px;color:var(--ink2)}
+.keys b{color:var(--ink);font-weight:600}
+.sw{height:20px;border-radius:4px;border:1px solid var(--line);position:relative;display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--ink);background:#fff}
+.sw.dark{background:var(--ink);border-color:var(--ink);color:#fff;font-weight:600}
+.sw.aic{background:var(--ai-tint);border-color:var(--ai-line);color:var(--ai-ink)}
+.cats{display:flex;flex-wrap:wrap;gap:4px 10px}
+.cats span{display:inline-flex;align-items:center;gap:5px;white-space:nowrap}
+.cats i{width:22px;height:12px;border-radius:2px;border:1px solid #9a9aa0;display:inline-block}
+.note-small{font-size:11px;color:var(--ink3);margin-top:10px}
+
+/* ---------- frame rows ---------- */
+.row{display:grid;grid-template-columns:minmax(1100px,1200px) minmax(300px,420px);gap:20px;align-items:start;margin:0 0 64px;scroll-margin-top:16px}
+@media (max-width:1499px){.row{grid-template-columns:minmax(0,1200px)}.legend ol{columns:2 300px;column-gap:28px}}
+.row.narrow{grid-template-columns:377px minmax(300px,600px)}
+@media (max-width:760px){.row.narrow{grid-template-columns:minmax(0,1fr)}.row.narrow .legend ol{columns:1}}
+.frame{min-width:0}
+.fh{display:flex;align-items:baseline;flex-wrap:wrap;gap:4px 10px;margin:0 0 10px}
+.fh .no{font:700 12px/1 ui-monospace,"Cascadia Mono",Consolas,monospace;background:var(--ink);color:#fff;border-radius:4px;padding:4px 6px;align-self:center}
+.fh h2{font-size:19px;letter-spacing:-.01em}
+.fh small{color:var(--ink3);font-size:12px}
+.fh .up{margin-left:auto;font-size:11.5px;color:var(--ink3);text-decoration:none}
+.fh .up:hover{color:var(--ink)}
+.fs{overflow-x:auto;padding:12px;margin:-12px}
+.art{min-width:1100px;max-width:1200px;background:var(--paper);border:1px solid var(--line);box-shadow:0 10px 30px rgba(0,0,0,.07);position:relative}
+
+/* ---------- legend beside each frame ---------- */
+.legend{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:14px 16px 6px;min-width:0}
+.legend h3{font-size:12px;text-transform:uppercase;letter-spacing:.07em;color:var(--ink2)}
+.legend .lg-sub{font-size:11.5px;color:var(--ink3);margin:3px 0 8px}
+.legend ol{list-style:none;padding:0}
+.legend li{break-inside:avoid;display:grid;grid-template-columns:24px minmax(0,1fr);column-gap:9px;padding:9px 0 10px;border-top:1px solid var(--line2)}
+.legend h4{font-size:13px;margin:2px 0 4px;line-height:1.3}
+.legend p{font-size:12px;color:var(--ink2);margin:3px 0;line-height:1.4}
+.legend p i{font-style:normal;font-size:9.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--ink);border:1px solid var(--line);border-radius:3px;padding:0 3px;margin-right:5px;white-space:nowrap}
+.legend p i.ai{color:var(--ai-ink);border-color:var(--ai-line);background:var(--ai-tint)}
+
+/* ---------- numbered callout markers (AI-integration points) ---------- */
+.co{position:absolute;z-index:30;width:22px;height:22px;border-radius:50%;background:var(--ai);color:#fff;font:700 12px/22px system-ui,"Segoe UI",sans-serif;text-align:center;box-shadow:0 0 0 2px #fff,0 2px 6px rgba(0,0,0,.28);pointer-events:none;font-style:normal;letter-spacing:0;text-transform:none}
+.co.tl{top:-10px;left:-10px}.co.tr{top:-10px;right:-10px}.co.bl{bottom:-10px;left:-10px}.co.br{bottom:-10px;right:-10px}
+.co.in{position:relative;display:inline-block;vertical-align:middle;margin:0 2px 0 6px;top:auto;left:auto;right:auto;bottom:auto}
+.legend .co{position:static}
+
+/* ---------- emoji as single-tone glyphs (keeps the board grayscale) ---------- */
+.e{color:transparent!important;text-shadow:0 0 0 var(--ink2);font-style:normal}
+.e.ai{text-shadow:0 0 0 var(--ai)}
+.e.dk{text-shadow:0 0 0 var(--ink)}
+
+/* ---------- app shell ---------- */
+.app{display:flex;position:relative;background:var(--paper)}
+.side{width:168px;flex:none;background:var(--fill2);border-right:1px solid var(--line);padding:14px 10px 12px;display:flex;flex-direction:column;gap:3px}
+.logo{display:flex;align-items:center;gap:8px;font-weight:800;font-size:16px;letter-spacing:.01em;margin:0 4px 16px}
+.logo i{width:18px;height:18px;border:2px solid var(--ink);border-radius:5px;position:relative;flex:none}
+.logo i::after{content:"";position:absolute;left:2px;right:2px;top:4px;height:2px;background:var(--ink)}
+.nav{display:flex;align-items:center;gap:9px;padding:6px 8px;border-radius:6px;color:var(--ink2);border:1px solid transparent}
+.nav::before{content:"";width:12px;height:12px;border:1.5px solid var(--ink3);border-radius:3px;flex:none}
+.nav.on{background:var(--paper);border-color:var(--line);color:var(--ink);font-weight:600}
+.nav.on::before{background:var(--ink);border-color:var(--ink)}
+.aipill{display:flex;align-items:flex-start;gap:7px;font-size:10.5px;line-height:1.3;color:var(--ai-ink);background:var(--ai-tint);border:1px solid var(--ai-line);border-radius:10px;padding:6px 9px;position:relative}
+.aipill::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--ai);margin-top:3px;flex:none}
+.aipill .eng{display:block;font-size:11.5px;font-weight:700}
+.aipill.offline{color:var(--ink2);background:var(--fill);border-color:var(--line)}
+.aipill.offline::before{background:transparent;border:1.5px solid var(--ink3)}
+.main{flex:1;min-width:0;display:flex;flex-direction:column}
+.top{display:flex;align-items:center;gap:7px;padding:10px 12px;border-bottom:1px solid var(--line);min-height:50px}
+.top .range{font-weight:700;font-size:14px;margin:0 4px;white-space:nowrap}
+.content{flex:1;display:flex;min-height:0;position:relative}
+
+/* ---------- controls ---------- */
+.btn{display:inline-flex;align-items:center;gap:4px;border:1px solid var(--line);background:#fff;border-radius:6px;padding:4px 9px;font-size:11.5px;line-height:1.35;white-space:nowrap;color:var(--ink);position:relative}
+.btn.pri{background:var(--ink);border-color:var(--ink);color:#fff;font-weight:600}
+.btn.sm{padding:2px 7px;font-size:10.5px;border-radius:5px}
+.btn.ic{padding:4px 8px}
+.btn.cfx{border:2px solid var(--ink);font-weight:700;padding:3px 9px}
+.btn.foc{outline:2px solid var(--ink);outline-offset:2px}
+.btn.lite{color:var(--ink3);border-style:dashed}
+.btn.wide{justify-content:center;width:100%;padding:9px;font-size:13px}
+.search{display:flex;align-items:center;gap:8px;min-width:250px;border:1px solid var(--ai-line);background:#fff;border-radius:8px;padding:5px 8px 5px 10px;color:var(--ink3);font-size:12px;position:relative}
+.search .t{flex:1}
+kbd{font:600 10px/1.2 ui-monospace,"Cascadia Mono",Consolas,monospace;border:1px solid var(--line);border-bottom-width:2px;border-radius:4px;padding:1px 4px;background:var(--fill2);color:var(--ink2);white-space:nowrap}
+.chip{display:inline-flex;align-items:center;gap:5px;border:1px solid var(--line);border-radius:999px;padding:2px 9px;font-size:11px;background:#fff;white-space:nowrap;line-height:1.4;position:relative;color:var(--ink)}
+.chip.ai{background:var(--ai-tint);border-color:var(--ai-line);color:var(--ai-ink)}
+.chip.q{border-style:dashed;border-color:var(--ai);background:#fff;color:var(--ai-ink)}
+.chip .x{color:var(--ink3);font-size:9.5px}
+.badge{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;border-radius:4px;padding:2px 6px;border:1px solid var(--line);color:var(--ink2);background:#fff;white-space:nowrap;position:relative}
+.badge.ai{border-color:var(--ai-line);background:var(--ai-tint);color:var(--ai-ink)}
+.sev{display:inline-block;font-size:9.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;border-radius:3px;padding:1px 5px;border:1px solid var(--ink);white-space:nowrap;line-height:1.35}
+.sev.hi{background:var(--ink);color:#fff}
+.sev.md{background:var(--line)}
+.sev.lo{background:#fff}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:6px;overflow:hidden;background:#fff;vertical-align:middle}
+.seg span{padding:3px 9px;font-size:11px;border-left:1px solid var(--line);white-space:nowrap}
+.seg span:first-child{border-left:0}
+.seg span.on{background:var(--ink);color:#fff;font-weight:600}
+.tog{display:inline-block;width:30px;height:17px;border-radius:999px;background:var(--line);position:relative;flex:none;vertical-align:middle}
+.tog::after{content:"";position:absolute;top:2px;left:2px;width:13px;height:13px;border-radius:50%;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.3)}
+.tog.on{background:var(--ink)}
+.tog.on::after{left:15px}
+.inp{display:flex;align-items:center;gap:5px;flex-wrap:wrap;border:1px solid var(--line);border-radius:6px;padding:3px 8px;min-height:28px;background:#fff;font-size:11.5px;min-width:0}
+.inp.ai{border-color:var(--ai-line)}
+.inp .hint{color:var(--ink4)}
+.dd::after{content:"▾";margin-left:auto;padding-left:6px;color:var(--ink3);font-size:10px}
+.why{font-size:10.5px;color:var(--ai-ink);text-decoration:underline;text-underline-offset:2px;white-space:nowrap}
+.ph{display:block;height:6px;border-radius:3px;background:var(--line2);margin:6px 0}
+.ph.ai{background:#dcd4fb}
+.w30{width:30%}.w45{width:45%}.w60{width:60%}.w75{width:75%}.w90{width:90%}
+
+/* ---------- Copilot rail and AI cards ---------- */
+.rail{width:292px;flex:none;background:var(--fill2);border-left:1px solid var(--line);padding:10px 10px 14px;display:flex;flex-direction:column;gap:7px}
+.rail-h{display:flex;align-items:center;gap:6px;font-weight:700;font-size:13px;color:var(--ai-ink)}
+.sec{display:flex;align-items:center;gap:4px;font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ink3);margin-top:5px;position:relative}
+.card{background:#fff;border:1px solid var(--line);border-radius:8px;padding:8px 10px;position:relative}
+.card.ai{border-color:var(--ai-line);border-left:3px solid var(--ai)}
+.card .ct{display:flex;align-items:center;gap:6px;flex-wrap:wrap;font-size:11px;color:var(--ink2)}
+.card .ct b{color:var(--ink)}
+.card h6{font-size:12px;line-height:1.3;margin:2px 0}
+.card p{font-size:11px;color:var(--ink2);margin:2px 0;line-height:1.35}
+.card p.ai,.ai-t{color:var(--ai-ink)}
+.acts{display:flex;align-items:center;gap:5px;flex-wrap:wrap;margin-top:7px;position:relative}
+.fb{margin-left:auto;display:inline-flex;gap:3px;position:relative}
+.fb span{border:1px solid var(--line);border-radius:5px;padding:0 4px;font-size:11px;line-height:18px;background:#fff}
+.more{font-size:11px;color:var(--ink2);text-decoration:underline;text-underline-offset:2px}
+
+/* ---------- week grid ---------- */
+.cal{flex:1;min-width:0;display:flex;flex-direction:column;position:relative}
+.wk{display:grid;grid-template-columns:46px repeat(5,minmax(0,1fr)) repeat(2,minmax(0,.55fr))}
+.wk-h{border-bottom:1px solid var(--line2)}
+.dh{padding:5px 6px 7px;border-left:1px solid var(--line2);font-size:10.5px;color:var(--ink2);min-width:0;position:relative;white-space:nowrap}
+.dh .dn{font-size:15px;color:var(--ink);margin-left:2px;display:inline-block;min-width:24px;height:24px;line-height:24px;text-align:center;border-radius:50%;font-weight:700}
+.dh.today .dn{background:var(--ink);color:#fff}
+.dh.we,.dh.hol{color:var(--ink3)}
+.load{display:flex;align-items:center;gap:4px;margin-top:3px;font-size:9.5px;color:var(--ink3)}
+.load i{flex:1;height:4px;border-radius:2px;background:linear-gradient(90deg,var(--ink2) 0 var(--w),var(--line2) var(--w) 100%)}
+.load.hot{color:var(--ink);font-weight:700}
+.wk-a{border-bottom:1px solid var(--line)}
+.wk-a>div{border-left:1px solid var(--line2);padding:3px;min-height:26px;min-width:0}
+.wk-a>div:first-child{border-left:0}
+.gut{font-size:9.5px;color:var(--ink3);text-align:right;padding:6px 6px 0 0!important}
+.allday{display:block;background:var(--fill);border:1px solid var(--line);border-radius:3px;padding:1px 6px;font-size:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* The visible window is 7:00–20:00 (13 h). Positions are percentages of the column, so the
+   grid stretches to the height of the rail or drawer beside it; --h is only the minimum hour height. */
+.wk-b{position:relative;flex:1}
+.hrs{position:relative;min-height:calc(13*var(--h))}
+.hrs span{position:absolute;right:6px;top:calc(var(--i) / 13 * 100% - 6px);font-size:9.5px;color:var(--ink3);white-space:nowrap}
+.hrs span:first-child{top:2px}
+.hrs .nl{top:calc((var(--t) - 7) / 13 * 100% - 7px);right:3px;background:var(--ink);color:#fff;border-radius:3px;padding:0 3px;font-weight:700;z-index:9}
+.col{position:relative;min-height:calc(13*var(--h));border-left:1px solid var(--line2);background-image:linear-gradient(to bottom,transparent calc(100% - 1px),var(--line2) calc(100% - 1px));background-size:100% calc(100% / 13);min-width:0}
+.col.offday{background-color:#efeff1}
+.hol-note{position:absolute;left:4px;right:4px;top:calc(3 / 13 * 100%);text-align:center;font-size:10px;color:var(--ink3);white-space:normal}
+.off{position:absolute;left:0;right:0;top:calc((var(--s) - 7) / 13 * 100%);height:calc((var(--e) - var(--s)) / 13 * 100%);background:rgba(0,0,0,.055);pointer-events:none}
+.ev{position:absolute;left:3px;right:3px;top:calc((var(--s) - 7) / 13 * 100% + 1px);height:calc((var(--e) - var(--s)) / 13 * 100% - 2px);border:1px solid #9a9aa0;border-radius:4px;background:var(--fill);padding:2px 5px;font-size:10.5px;line-height:1.22;overflow:hidden;z-index:2;color:var(--ink)}
+.ev b{display:block;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ev em{display:block;font-style:normal;color:var(--ink2);font-size:9.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ev.wr b{white-space:normal}
+.ev.xs{padding:0 4px;font-size:8.5px;line-height:1.1}
+.ev.l{right:50%}
+.ev.r{left:50%;right:3px;z-index:3}
+.ev.ov{left:28%;z-index:3}
+.ev.tv{left:3px;right:auto;width:24%;border:1px dotted var(--ink3);background:#fff;color:var(--ink2);font-size:9px;z-index:1;padding:1px 2px;white-space:nowrap}
+/* event categories (hues in the app; gray treatments here) */
+.k-cust{background:#cfcfd4;border-color:#85858b;border-left:4px solid #3f3f44}
+.k-lead{background:repeating-linear-gradient(0deg,#fff 0 3px,#e1e1e5 3px 4px);border-color:#85858b}
+.k-team{background:#ececef;border-color:#a9a9af}
+.k-one{background:#fff;border-color:#5f5f65}
+.k-hire{background:#f8f8f9 radial-gradient(circle,#a3a3a9 1px,transparent 1.4px) 0 0/6px 6px;border-color:#a9a9af}
+.k-ext{background:#fff;border-color:#a9a9af;border-left:4px solid #a9a9af}
+.k-focus{background:repeating-linear-gradient(135deg,#fff 0 4px,#d9d9de 4px 8px);border-color:#8d8d93}
+/* event states */
+.cf{border:2px solid var(--ink)!important;box-shadow:0 0 0 2px #fff,0 0 0 3.5px var(--ink);z-index:4}
+.cf b::before{content:"⚠ "}
+.ghost{background:var(--ai-wash)!important;border:1.5px dashed var(--ai)!important;color:var(--ai-ink);z-index:5}
+.ghost b,.ghost em{color:var(--ai-ink)}
+.selected{box-shadow:0 0 0 2px #fff,0 0 0 4px var(--ink);z-index:6}
+.moving{opacity:.45}
+.now{position:absolute;left:0;right:0;top:calc((var(--t) - 7) / 13 * 100%);border-top:2px solid var(--ink);z-index:8}
+.now::before{content:"";position:absolute;left:-5px;top:-6px;width:10px;height:10px;border-radius:50%;background:var(--ink)}
+.sbar{position:absolute;right:2px;top:118px;width:5px;height:40%;border-radius:3px;background:var(--line);z-index:9}
+.banner{display:flex;align-items:center;gap:8px;padding:7px 10px;background:var(--ai-tint);border-bottom:1px solid var(--ai-line);color:var(--ai-ink);font-size:11.5px;position:relative}
+
+/* ---------- drawers, forms, slot cards ---------- */
+.drawer{width:440px;flex:none;background:#fff;border-left:1px solid var(--line);box-shadow:-12px 0 28px rgba(0,0,0,.09);display:flex;flex-direction:column;position:relative;z-index:12}
+.drawer.wide{width:480px}
+.dr-h{display:flex;align-items:center;gap:8px;padding:11px 14px;border-bottom:1px solid var(--line2)}
+.dr-h h3{font-size:15px;flex:1;line-height:1.25}
+.x-close{font-size:14px;color:var(--ink3);line-height:1}
+.dr-b{padding:12px 14px 16px;display:flex;flex-direction:column;gap:9px}
+.lbl2{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ink3);display:flex;align-items:center;gap:6px;position:relative}
+.lbl2 .n{font-weight:400;letter-spacing:0;text-transform:none;font-size:11px}
+.fld{display:grid;grid-template-columns:92px minmax(0,1fr);align-items:center;gap:8px;font-size:11.5px;position:relative}
+.fld>span:first-child{color:var(--ink2)}
+.hr{height:1px;background:var(--line2);margin:2px 0}
+.slot{border:1px solid var(--ai-line);border-radius:8px;padding:9px 10px 8px;background:#fff;position:relative}
+.slot.hov{box-shadow:0 0 0 2px var(--ai)}
+.slot-h{display:flex;align-items:center;gap:8px}
+.rk{min-width:22px;height:22px;border-radius:5px;background:var(--ink);color:#fff;font-weight:700;font-size:11.5px;display:inline-grid;place-items:center;flex:none;padding:0 4px}
+.rk.alt{background:#fff;color:var(--ink);border:1px solid var(--ink)}
+.when{font-weight:700;font-size:12.5px;flex:1;min-width:0;line-height:1.3}
+.when em{font-style:normal;font-weight:400;color:var(--ink3);font-size:11px}
+.score{display:inline-flex;align-items:center;gap:6px;font-size:10.5px;color:var(--ink2);font-variant-numeric:tabular-nums;white-space:nowrap}
+.bar{width:60px;height:6px;border-radius:3px;background:var(--line2);position:relative;overflow:hidden;display:inline-block}
+.bar i{position:absolute;left:0;top:0;bottom:0;width:var(--v);background:var(--ai);border-radius:3px}
+.rs{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:2px 10px;margin:6px 0 4px;font-size:11px;line-height:1.35}
+.rs.one{grid-template-columns:minmax(0,1fr)}
+.ok::before{content:"✓";font-weight:800;margin-right:5px}
+.wn::before{content:"⚠";margin-right:5px}
+.lts{display:flex;gap:4px;flex-wrap:wrap;margin:5px 0 2px;position:relative}
+.lt{font-size:10.5px;border-radius:4px;padding:1px 6px;border:1px solid var(--line);white-space:nowrap;background:#fff}
+.lt.good::before{content:"✓ ";font-weight:700}
+.lt.edge{background:var(--fill)}
+.lt.edge::before{content:"◐ "}
+.lt.bad{background:var(--ink2);color:#fff;border-color:var(--ink2)}
+.lt.bad::before{content:"☾ "}
+.toast{display:flex;align-items:center;gap:10px;background:var(--ink);color:#fff;border-radius:8px;padding:9px 12px;font-size:12px;box-shadow:0 8px 20px rgba(0,0,0,.22);position:relative}
+.toast .u{font-weight:700;text-decoration:underline;text-underline-offset:2px;white-space:nowrap}
+.toast .tm{color:#c9c9ce;font-size:11px;white-space:nowrap}
+
+/* ---------- state insets and flow strips ---------- */
+.states{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;padding:18px 16px 16px;border-top:1px dashed var(--line);background:var(--fill2)}
+.state{min-width:0;position:relative}
+.state .sl{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ink3);margin-bottom:6px}
+.state .sb{background:#fff;border:1px solid var(--line);border-radius:8px;padding:10px 12px;position:relative;display:flex;flex-direction:column;gap:7px;font-size:11.5px}
+.flow{margin-top:18px;background:#fff;border:1px solid var(--line);border-radius:10px;padding:11px 12px 12px;scroll-margin-top:16px}
+.flow h4{font-size:12.5px;display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap}
+.flow h4 .fid{font:700 11px/1 ui-monospace,"Cascadia Mono",Consolas,monospace;border:1.5px solid var(--ink);border-radius:4px;padding:3px 5px}
+.flow h4 small{font-weight:400;color:var(--ink3);font-size:11px}
+.steps{display:flex;flex-wrap:wrap;align-items:center;row-gap:8px;padding:0;list-style:none}
+.steps li{display:flex;align-items:center;font-size:11.5px}
+.steps li+li::before{content:"→";padding:0 6px;color:var(--ink3);font-weight:700}
+.st{border:1px solid var(--line);border-radius:6px;padding:4px 8px;background:var(--fill2);line-height:1.3;max-width:178px}
+.st b{display:block;font-size:9.5px;letter-spacing:.05em;color:var(--ink3);text-transform:uppercase}
+.st.ai{border-color:var(--ai-line);background:var(--ai-tint)}
+.st.q{border-style:dashed;background:#fff}
+.st.q b::before{content:"◇ "}
+.undo{display:inline-block;font-size:9.5px;font-weight:800;letter-spacing:.04em;border:1.5px solid var(--ink);border-radius:3px;padding:0 4px;margin-left:4px;white-space:nowrap;background:#fff;color:var(--ink)}
+.edges{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;font-size:11px;color:var(--ink2)}
+.edges>span{border:1px dashed var(--ink4);border-radius:6px;padding:3px 8px;background:#fff}
+.edges b{color:var(--ink)}
+.foot{margin-top:24px;font-size:12px;color:var(--ink2);max-width:980px}
+.foot p{margin:4px 0}
+
+/* ---------- command bar ---------- */
+.scrim{position:absolute;inset:0;background:rgba(29,29,31,.42);z-index:15}
+.cmdk{position:absolute;left:50%;top:56px;transform:translateX(-50%);width:700px;max-width:calc(100% - 40px);background:#fff;border:1px solid var(--line);border-radius:12px;box-shadow:0 24px 60px rgba(0,0,0,.32);z-index:20}
+.cmd-in{display:flex;align-items:center;gap:10px;padding:14px 16px;border-bottom:1px solid var(--line2);font-size:15px;position:relative}
+.cmd-in .typed{flex:1;min-width:0}
+.caret{display:inline-block;width:2px;height:17px;background:var(--ink);vertical-align:-3px;margin-left:1px}
+.cmd-chips{display:flex;align-items:center;flex-wrap:wrap;gap:6px;padding:10px 16px;border-bottom:1px solid var(--line2);position:relative}
+.cmd-res{padding:8px 8px 4px;position:relative}
+.cmd-res>.lbl2{padding:2px 8px 6px}
+.res{display:grid;grid-template-columns:24px minmax(0,1.25fr) 96px minmax(0,1.9fr) auto;align-items:center;gap:10px;padding:7px 8px;border-radius:8px;font-size:12px}
+.res.on{background:var(--ai-tint);box-shadow:inset 0 0 0 1.5px var(--ai-line)}
+.res .w{font-weight:700;white-space:nowrap}
+.res .rw{color:var(--ink2);font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.res .rw span+span{margin-left:8px}
+.cmd-more{display:flex;flex-wrap:wrap;gap:6px 16px;padding:6px 8px;font-size:11px;color:var(--ink2)}
+.cmd-f{display:flex;align-items:center;flex-wrap:wrap;gap:6px 12px;padding:8px 16px;border-top:1px solid var(--line2);font-size:10.5px;color:var(--ink3);background:var(--fill2);border-radius:0 0 12px 12px;position:relative}
+.mini-cmd{display:flex;align-items:center;gap:7px;border:1px solid var(--line);border-radius:8px;padding:6px 9px;font-size:12px}
+.mini-cmd .t{flex:1;min-width:0}
+.big{font-size:22px;font-weight:700;letter-spacing:-.01em;line-height:1.2}
+.big small{font-size:12px;font-weight:400;color:var(--ink2);margin-left:4px}
+.ln{display:flex;align-items:center;gap:6px;font-size:11.5px;flex-wrap:wrap}
+.pick{border:1px solid var(--ai-line);border-radius:8px;overflow:hidden}
+.pick div{padding:5px 9px;font-size:11.5px;border-top:1px solid var(--line2)}
+.pick div:first-child{border-top:0;background:var(--ai-tint)}
+.minibars{display:flex;align-items:flex-end;gap:5px;height:40px;border-bottom:1px solid var(--ink3)}
+.minibars i{flex:1;background:var(--line);border-radius:2px 2px 0 0;display:block}
+.minibars i.hl{background:var(--ink2)}
+.skc{background:#fff;border:1px solid var(--line);border-radius:8px;padding:6px 10px}
+.sk .ev{color:transparent}
+.ag{margin:0;padding-left:18px;font-size:11.5px}
+.ag li{margin:2px 0}
+.note{font-size:11px;color:var(--ink2);background:var(--fill2);border:1px solid var(--line2);border-radius:6px;padding:5px 8px;line-height:1.4}
+.note.ai{background:var(--ai-tint);border-color:var(--ai-line);color:var(--ai-ink)}
+
+/* ---------- conflict center ---------- */
+.cfc{border:1px solid var(--line);border-radius:8px;padding:8px 10px;position:relative}
+.cfc.open{border:2px solid var(--ink);padding:7px 9px}
+.cfc.warnc{border-style:dashed}
+.cfc-h{display:flex;align-items:center;gap:6px;font-size:11.5px;flex-wrap:wrap}
+.cfc-h .ty{font-size:13px}
+.cfc p{font-size:11.5px;margin:3px 0;color:var(--ink2)}
+.cfc p b{color:var(--ink)}
+.fix{border:1px solid var(--ai-line);border-radius:7px;padding:7px 9px;margin-top:6px;position:relative;background:#fff}
+.fix.sel{box-shadow:0 0 0 2px var(--ai)}
+.fix .when{font-size:12px}
+.imp{display:flex;flex-wrap:wrap;gap:3px 10px;font-size:11px;margin-top:5px;color:var(--ink2)}
+.pp{font-weight:700;color:var(--ink);border:1px solid var(--ink);border-radius:3px;padding:0 4px;white-space:nowrap}
+.chev{color:var(--ink3);font-size:11px}
+
+/* ---------- event drawer ---------- */
+.meta{display:flex;flex-direction:column;gap:4px;font-size:11.5px;color:var(--ink2);position:relative}
+.meta b{color:var(--ink)}
+.att{display:grid;grid-template-columns:22px minmax(0,1fr) auto;gap:4px 8px;align-items:center;font-size:11.5px}
+.av{width:22px;height:22px;border-radius:50%;background:var(--fill);border:1px solid var(--line);display:grid;place-items:center;font-size:9.5px;font-weight:700}
+.av.ex{background:#fff;border-style:dashed;border-color:var(--ink3)}
+.att .who{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.att .who span{color:var(--ink3)}
+.rsvp{font-size:10.5px;color:var(--ink2);white-space:nowrap}
+.blk{border:1px solid var(--line);border-radius:8px;padding:9px 11px;position:relative;display:flex;flex-direction:column;gap:6px}
+.blk.ai{border-color:var(--ai-line);border-left:3px solid var(--ai)}
+.brief{display:grid;grid-template-columns:92px minmax(0,1fr);gap:4px 10px;font-size:11.5px}
+.brief dt{color:var(--ink3)}
+.rem{display:grid;grid-template-columns:34px minmax(0,1fr) auto;gap:8px;align-items:start;padding:6px 0 4px;border-top:1px solid var(--line2);font-size:11.5px;position:relative}
+.rem.first{border-top:0}
+.rem .tog{margin-top:1px}
+.rem b{display:block}
+.rem .bc{font-size:11px;color:var(--ai-ink)}
+.rem.offr b,.rem.offr .bc{color:var(--ink3)}
+.mv{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.mv .k{display:block;font-size:10.5px;color:var(--ink3)}
+.mv .v{display:block;font-size:18px;font-weight:700}
+.mv .s{display:block;font-size:10.5px;color:var(--ink3)}
+.factors{display:flex;flex-wrap:wrap;gap:4px}
+.alert{display:flex;align-items:center;gap:8px;border:2px solid var(--ink);border-radius:7px;padding:5px 9px;font-size:11.5px;font-weight:600}
+.notif{display:flex;gap:9px;align-items:flex-start;border:1px solid var(--line);border-radius:10px;padding:9px 11px;background:#fff;box-shadow:0 6px 16px rgba(0,0,0,.10);font-size:11.5px}
+.notif .ic{width:26px;height:26px;border-radius:7px;background:var(--ink);flex:none}
+.notif b{display:block}
+
+/* ---------- insights ---------- */
+.page{flex:1;min-width:0;padding:14px 16px 18px;display:flex;flex-direction:column;gap:12px}
+.pg-h{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.pg-h h3{font-size:18px;margin-right:auto}
+.kpis{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px;position:relative}
+.kpi{border:1px solid var(--line);border-radius:8px;padding:8px 10px 9px;position:relative;min-width:0}
+.kpi .k{font-size:10.5px;color:var(--ink2)}
+.kpi .v{font-size:21px;font-weight:700;margin:2px 0 1px;letter-spacing:-.01em}
+.kpi .v small{font-size:11px;font-weight:500;color:var(--ink3)}
+.kpi .d{font-size:10.5px;color:var(--ink3);line-height:1.3}
+.kpi.ai{border-color:var(--ai-line);background:var(--ai-tint)}
+.kpi.ai .k,.kpi.ai .v{color:var(--ai-ink)}
+.prog{height:5px;border-radius:3px;background:var(--line2);margin-top:5px;overflow:hidden}
+.prog i{display:block;height:100%;width:var(--v);background:var(--ink2)}
+.gA{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.3fr) minmax(0,.8fr);gap:12px}
+.gB{display:grid;grid-template-columns:minmax(0,2.15fr) minmax(0,1fr) minmax(0,.8fr);gap:12px}
+.panel{border:1px solid var(--line);border-radius:8px;padding:10px 12px;position:relative;min-width:0}
+.panel.ai{border-color:var(--ai-line)}
+.panel h5{font-size:12.5px;display:flex;align-items:center;gap:6px;margin-bottom:8px;flex-wrap:wrap}
+.panel h5 small{font-weight:400;color:var(--ink3);font-size:11px}
+.sbars{display:flex;align-items:flex-end;gap:10px;height:124px;margin-left:30px;border-bottom:1px solid var(--ink3);position:relative;background:linear-gradient(to top,var(--line2) 1px,transparent 1px) 0 100%/100% 36px}
+.sbars .b{flex:1;display:flex;flex-direction:column-reverse;gap:2px}
+.sbars .b i{display:block}
+.sbars .b i:last-child{border-radius:3px 3px 0 0}
+.sbars .yl{position:absolute;left:-30px;font-size:9.5px;color:var(--ink3);line-height:1;transform:translateY(50%)}
+.xl{display:flex;gap:10px;margin-left:30px;padding-top:3px;font-size:9.5px;color:var(--ink3)}
+.xl span{flex:1;text-align:center;white-space:nowrap}
+.c1{background:#3f3f44}.c2{background:#77777d}.c3{background:#a9a9af}.c4{background:#d0d0d5}
+.c5{background:#fff radial-gradient(circle,#8a8a90 1px,transparent 1.4px) 0 0/5px 5px;box-shadow:inset 0 0 0 1px #a9a9af}
+.c6{background:repeating-linear-gradient(135deg,#fff 0 3px,#bdbdc2 3px 6px);box-shadow:inset 0 0 0 1px #a9a9af}
+.leg{display:flex;flex-wrap:wrap;gap:3px 10px;font-size:10.5px;color:var(--ink2);margin-top:8px}
+.leg span{display:inline-flex;align-items:center;gap:4px;white-space:nowrap}
+.leg i{width:10px;height:10px;border-radius:2px;display:inline-block}
+.hm{display:grid;grid-template-columns:28px repeat(10,minmax(0,1fr));gap:2px;font-size:9.5px;color:var(--ink3);align-items:center}
+.hm i{height:17px;border-radius:2px;display:block}
+.hm .hx{text-align:center}
+.l0{background:#f3f3f5}.l1{background:#dcdce0}.l2{background:#b8b8be}.l3{background:#8b8b91}.l4{background:#56565b}
+.hm i.q{box-shadow:inset 0 0 0 2px var(--ai)}
+.tbl{width:100%;border-collapse:collapse;font-size:11.5px}
+.tbl th{text-align:left;font-size:9.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ink3);padding:4px 6px;border-bottom:1px solid var(--line)}
+.tbl td{padding:6px;border-bottom:1px solid var(--line2);vertical-align:top}
+.tbl .n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.tbl td small{display:block;color:var(--ink3);font-size:10.5px}
+.tbl td.sg{color:var(--ai-ink)}
+.tbl tr.hl td{background:var(--ai-tint)}
+.hb{display:grid;grid-template-columns:84px minmax(0,1fr) 34px;gap:5px 8px;align-items:center;font-size:11px}
+.hb i{height:8px;border-radius:0 3px 3px 0;background:var(--ink2);display:block;width:var(--v)}
+.hb .n{text-align:right;color:var(--ink2);font-variant-numeric:tabular-nums}
+.mc{display:grid;grid-template-columns:70px minmax(0,1fr);gap:4px 8px;font-size:11px}
+.mc dt{color:var(--ink3)}
+svg text{font-family:inherit}
+
+/* ---------- settings ---------- */
+.set{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);gap:12px;align-items:start}
+.setc{display:flex;flex-direction:column;gap:12px;min-width:0}
+.dial{width:100%;border-collapse:collapse;font-size:11.5px}
+.dial td,.dial th{padding:7px 4px;border-bottom:1px solid var(--line2);text-align:left;vertical-align:middle}
+.dial th{font-size:9.5px;color:var(--ink3);letter-spacing:.06em;text-transform:uppercase;font-weight:700}
+.dial td small{display:block;color:var(--ink3);font-size:10.5px}
+.drop{border:1.5px dashed var(--line);border-radius:8px;padding:10px;text-align:center;font-size:11px;color:var(--ink2)}
+.kv{display:grid;grid-template-columns:150px minmax(0,1fr);gap:7px 10px;align-items:center;font-size:11.5px}
+.kv>span:nth-child(odd){color:var(--ink2)}
+.ok-dot::before{content:"";display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--ai);margin-right:6px}
+.off-dot::before{content:"";display:inline-block;width:8px;height:8px;border-radius:50%;border:1.5px solid var(--ink3);margin-right:6px;vertical-align:-1px}
+
+/* ---------- study mode ---------- */
+.study{display:grid;grid-template-columns:minmax(0,1fr) 276px;gap:12px;align-items:start}
+.timer{font:600 12px/1 ui-monospace,"Cascadia Mono",Consolas,monospace;white-space:nowrap}
+.rad{display:inline-flex;gap:3px}
+.rad span{border:1px solid var(--line);border-radius:4px;padding:1px 5px;font-size:10.5px;background:#fff}
+.rad span.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.notes{border:1px solid var(--line);border-radius:5px;min-height:24px;padding:3px 6px;font-size:10.5px;color:var(--ink2);background:#fff}
+.notes.empty{color:var(--ink4)}
+.rec{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:700}
+.rec::before{content:"";width:9px;height:9px;border-radius:50%;background:var(--ink)}
+.met{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.met>div{border:1px solid var(--ai-line);background:var(--ai-tint);border-radius:8px;padding:8px 10px}
+.met .k{display:block;font-size:10.5px;color:var(--ai-ink)}
+.met .v{display:block;font-size:20px;font-weight:700;color:var(--ai-ink)}
+.met .s{display:block;font-size:10px;color:var(--ink2)}
+
+/* ---------- mobile ---------- */
+.row.narrow .art{min-width:0;width:377px;max-width:377px;border-radius:30px;padding:10px;background:#d9d9dc;border-color:#b9b9be}
+.phone{background:#fff;border-radius:22px;height:760px;position:relative;display:flex;flex-direction:column}
+.sbar-m{display:flex;justify-content:space-between;padding:10px 20px 4px;font-size:11px;font-weight:700}
+.m-h{display:flex;align-items:center;justify-content:space-between;padding:6px 14px 8px;font-size:13px}
+.m-h b{font-size:14px}
+.m-in{margin:0 12px;display:flex;align-items:center;gap:8px;border:1.5px solid var(--ai);border-radius:12px;padding:10px 12px;font-size:14px;position:relative;line-height:1.35}
+.m-chips{display:flex;flex-wrap:wrap;gap:6px;padding:10px 12px 4px;position:relative}
+.m-chips .chip{font-size:12px;padding:4px 10px}
+.m-res{flex:1;overflow:hidden;padding:12px 12px 0;display:flex;flex-direction:column;gap:8px}
+.m-card{border:1px solid var(--ai-line);border-radius:12px;padding:10px 12px;position:relative;flex:none}
+.m-card.best{box-shadow:0 0 0 2px var(--ai)}
+.m-foot{padding:8px 12px 12px;border-top:1px solid var(--line2);display:flex;flex-direction:column;gap:8px;position:relative}
+.home{width:120px;height:5px;border-radius:3px;background:var(--ink);margin:2px auto 0}
+</style>
+</head>
+<body id="top">
+<div class="wrap">
+
+<!-- =================================================================
+     BOARD HEADER
+     ================================================================= -->
+<header class="bh">
+  <div>
+    <h1>Kairos <span>· wireframe board</span></h1>
+    <p class="intro">Low-fidelity screens for the AI-native calendar prototype. Every AI-integration point carries a numbered callout; the legend beside each frame says what the AI does, what you control, and how the AI's choice is explained and undone. Flow strips under the frames trace the four key user flows.</p>
+    <div class="tags">
+      <span class="tag">Low fidelity · v0.1</span>
+      <span class="tag">Nov 25, 2026</span>
+      <span class="tag">Desktop artboards ≈ 1200 px · mobile 375 px</span>
+      <span class="tag">Demo world: Lumora (fictional)</span>
+      <a class="tag" href="../../docs/03-prototype-and-flows.md">Flows &amp; diagrams → docs/03-prototype-and-flows.md</a>
+    </div>
+  </div>
+
+  <nav class="box toc" aria-label="Contents">
+    <h2>Contents</h2>
+    <ol>
+      <li><a href="#calendar">Calendar workspace</a></li>
+      <li><a href="#command-bar">Command bar (Ctrl+K)</a></li>
+      <li><a href="#schedule-assistant">Schedule assistant</a></li>
+      <li><a href="#conflict-center">Conflict center</a></li>
+      <li><a href="#event-drawer">Event drawer</a></li>
+      <li><a href="#insights">Insights</a></li>
+      <li><a href="#settings">Settings</a></li>
+      <li><a href="#study-mode">Study mode</a></li>
+      <li><a href="#mobile-command-bar">Command bar · mobile</a></li>
+    </ol>
+    <div class="fl"><b>Flows:</b>
+      <a href="#flow-1a">1A Schedule via Ctrl+K</a>
+      <a href="#flow-1b">1B Schedule via + New meeting</a>
+      <a href="#flow-2">2 Smart reminders</a>
+      <a href="#flow-3">3 Act on an insight</a>
+      <a href="#flow-4">4 Resolve a conflict</a>
+    </div>
+  </nav>
+
+  <section class="box" aria-label="How to read this board">
+    <h2>How to read this board</h2>
+    <div class="keys">
+      <span class="sw aic">✨ AI</span><span><b>Violet = AI.</b> Cards, chips, scores, drafts, ghosts. It is the only hue on the board.</span>
+      <span class="sw dark">Apply</span><span><b>Black buttons = your decision.</b> The AI proposes; you book, apply or send.</span>
+      <span class="sw" style="border:0;background:none"><b class="co" style="position:static">1</b></span><span><b>Callout</b> on an AI-integration point, explained in the legend beside the frame.</span>
+      <span class="sw ghost" style="border:1.5px dashed var(--ai)">preview</span><span><b>Ghost preview</b>: suggested, not booked, nobody notified.</span>
+      <span class="sw k-focus"><span class="e dk">🔒</span></span><span><b>Focus block</b> (protected). <span class="e ai">✨</span> marks anything the AI created or wrote.</span>
+      <span class="sw cf" style="margin:3px">⚠</span><span><b>Conflict</b>: heavy outline + ⚠. Red in the app, never color-only.</span>
+      <span class="sw" style="border:0;background:none;font-size:15px">✓ ⚠</span><span>Reason / warning (green / amber in the app). Attendee comfort: ✓ ok · ◐ stretch · ☾ late night.</span>
+    </div>
+    <div class="cats note-small">
+      <span><i class="k-cust"></i>Customer</span>
+      <span><i class="k-lead"></i>Leadership &amp; planning</span>
+      <span><i class="k-team"></i>Team sync</span>
+      <span><i class="k-one"></i>1:1</span>
+      <span><i class="k-hire"></i>Hiring</span>
+      <span><i class="k-ext"></i>Vendors</span>
+      <span><i class="k-focus"></i>Focus</span>
+    </div>
+    <p class="note-small">Category hues in the app appear here as gray treatments. Names, times and numbers are illustrative demo data; "today" is Wed Nov 25, 2026, 11:20 AM PT.</p>
+  </section>
+</header>
+
+<!-- =================================================================
+     01 · CALENDAR WORKSPACE
+     ================================================================= -->
+<section class="row" id="calendar">
+  <div class="frame">
+    <div class="fh"><span class="no">01</span><h2>Calendar workspace</h2><small>desktop · week view (home) · Copilot rail open</small><a class="up" href="#top">↑ Contents</a></div>
+    <div class="fs"><div class="art" style="--h:44px">
+      <div class="app">
+        <aside class="side">
+          <div class="logo"><i></i>Kairos</div>
+          <div class="nav on">Calendar</div>
+          <div class="nav">Insights</div>
+          <div class="nav">Study mode</div>
+          <div class="nav">Settings</div>
+          <div class="sp"></div>
+          <div class="aipill"><span><span class="eng">Claude</span>claude-opus-5-5</span><b class="co tr">12</b></div>
+        </aside>
+        <div class="main">
+          <div class="top">
+            <span class="btn">Today</span><span class="btn ic">‹</span><span class="btn ic">›</span>
+            <span class="range">Nov 23 – 29, 2026</span>
+            <span class="chip">PT · San Francisco ▾</span>
+            <span class="search"><span class="e ai">✨</span><span class="t">Ask Kairos…</span><kbd>Ctrl+K</kbd><b class="co tl">1</b></span>
+            <span class="sp"></span>
+            <span class="btn pri">+ New meeting<b class="co tr">2</b></span>
+            <span class="btn cfx">⚠ 3 conflicts<b class="co tr">3</b></span>
+          </div>
+          <div class="content">
+            <div class="cal">
+              <div class="wk wk-h">
+                <div></div>
+                <div class="dh">Mon <span class="dn">23</span><div class="load" style="--w:75%"><i></i>3.8 h</div></div>
+                <div class="dh">Tue <span class="dn">24</span><div class="load" style="--w:55%"><i></i>2.8 h</div></div>
+                <div class="dh today">Wed <span class="dn">25</span><div class="load hot" style="--w:85%"><i></i>4.3 h</div><b class="co" style="top:3px;right:3px">4</b></div>
+                <div class="dh hol">Thu <span class="dn">26</span><div class="load" style="--w:0%"><i></i>0 h</div></div>
+                <div class="dh">Fri <span class="dn">27</span><div class="load" style="--w:60%"><i></i>3.0 h</div></div>
+                <div class="dh we">Sat <span class="dn">28</span></div>
+                <div class="dh we">Sun <span class="dn">29</span></div>
+              </div>
+              <div class="wk wk-a">
+                <div class="gut">all-day</div>
+                <div></div><div></div><div></div>
+                <div><span class="allday">Thanksgiving (US)</span></div>
+                <div></div><div></div><div></div>
+              </div>
+              <div class="wk wk-b">
+                <div class="hrs"><span style="--i:0">7 AM</span><span style="--i:1">8 AM</span><span style="--i:2">9 AM</span><span style="--i:3">10 AM</span><span style="--i:4">11 AM</span><span style="--i:5">12 PM</span><span style="--i:6">1 PM</span><span style="--i:7">2 PM</span><span style="--i:8">3 PM</span><span style="--i:9">4 PM</span><span style="--i:10">5 PM</span><span style="--i:11">6 PM</span><span style="--i:12">7 PM</span><span class="nl" style="--t:11.333">11:20</span></div>
+                <!-- Mon 23 -->
+                <div class="col">
+                  <i class="off" style="--s:7;--e:8"></i><i class="off" style="--s:17.5;--e:20"></i>
+                  <div class="ev k-one" style="--s:8;--e:8.5"><b>1:1 Maya / Emma</b></div>
+                  <div class="ev k-team xs" style="--s:9;--e:9.25"><b>CS leadership standup</b></div>
+                  <div class="ev k-cust wr" style="--s:10;--e:10.75"><b>Cobalt Health — adoption review</b></div>
+                  <div class="ev k-lead" style="--s:13;--e:14"><b>Exec staff meeting</b><em>Jordan · HQ</em></div>
+                  <div class="ev k-hire wr" style="--s:14.5;--e:15.25"><b>Interview: Senior CSM</b></div>
+                  <div class="ev k-team" style="--s:15.5;--e:16"><b>Sync: renewal pricing</b></div>
+                </div>
+                <!-- Tue 24 -->
+                <div class="col">
+                  <i class="off" style="--s:7;--e:8"></i><i class="off" style="--s:17.5;--e:20"></i>
+                  <div class="ev k-team wr" style="--s:8;--e:9"><b>Weekly CS team meeting</b></div>
+                  <div class="ev k-team xs" style="--s:9;--e:9.25"><b>CS leadership standup</b></div>
+                  <div class="ev k-lead wr" style="--s:10;--e:11"><b>Renewal forecast review</b></div>
+                  <div class="ev k-focus" style="--s:13;--e:15"><b><span class="e">🔒</span> Focus: deep work</b></div>
+                  <div class="ev k-cust" style="--s:15.5;--e:16"><b>Fernway Retail — renewal check-in</b></div>
+                </div>
+                <!-- Wed 25 (today) -->
+                <div class="col">
+                  <i class="off" style="--s:7;--e:8"></i><i class="off" style="--s:17.5;--e:20"></i>
+                  <div class="ev k-one" style="--s:8.5;--e:9"><b>1:1 Maya / Alex</b></div>
+                  <div class="ev k-team xs" style="--s:9;--e:9.25"><b>CS leadership standup</b></div>
+                  <div class="ev k-cust wr" style="--s:9.5;--e:10.25"><b>Brightwave — onboarding sync</b></div>
+                  <div class="ev k-team" style="--s:10.5;--e:11"><b><span class="e ai">✨</span> Sync: onboarding playbook</b></div>
+                  <div class="ev k-team" style="--s:11.5;--e:12"><b>Sync: QBR deck review</b></div>
+                  <div class="ev k-hire wr" style="--s:13;--e:13.75"><b>Interview: Support Engineer</b></div>
+                  <div class="ev k-lead wr" style="--s:14;--e:15"><b>Churn analysis readout</b></div>
+                  <div class="ev k-focus" style="--s:15.5;--e:17"><b><span class="e">🔒</span> Focus <span class="e ai">✨</span></b><em>protected by Kairos</em></div>
+                  <i class="now" style="--t:11.333"></i>
+                  <b class="co" style="top:calc(3.5 / 13 * 100% - 9px);right:-4px">6</b>
+                  <b class="co" style="top:calc(8.5 / 13 * 100% + 2px);right:-4px">5</b>
+                </div>
+                <!-- Thu 26 (holiday) -->
+                <div class="col offday"><div class="hol-note">Thanksgiving (US)<br>holiday · no meetings</div></div>
+                <!-- Fri 27 -->
+                <div class="col">
+                  <i class="off" style="--s:7;--e:8"></i><i class="off" style="--s:17.5;--e:20"></i>
+                  <div class="ev k-lead wr" style="--s:10;--e:11"><b>Pipeline &amp; renewals review</b><em>you're optional</em></div>
+                  <div class="ev ghost" style="--s:13.25;--e:13.75"><b><span class="e ai">✨</span> Prep: Brightwave QBR</b></div>
+                  <div class="ev k-cust cf l" style="--s:14;--e:15" title="Brightwave Logistics — QBR"><b>QBR</b><em>Brightwave</em><em>external</em></div>
+                  <div class="ev k-lead cf r wr" style="--s:14;--e:15" title="Customer health review"><b>Health review</b><em>you organize</em></div>
+                  <b class="co" style="top:calc(6.25 / 13 * 100% - 11px);right:-4px">7</b>
+                  <b class="co" style="top:calc(7 / 13 * 100% - 11px);left:-10px">3</b>
+                </div>
+                <div class="col offday"></div>
+                <div class="col offday"></div>
+              </div>
+              <i class="sbar" title="scrollable"></i>
+            </div>
+
+            <aside class="rail">
+              <div class="rail-h"><span class="e ai">✨</span> Copilot<span class="sp"></span><span class="btn sm">⚙</span><span class="btn sm">✕</span></div>
+
+              <div class="sec">Needs attention · 3<b class="co in">8</b></div>
+              <div class="card ai">
+                <div class="ct"><span class="sev hi">High</span><b>⚠ Overlap</b><span>Fri 2:00 PM</span></div>
+                <h6>Brightwave Logistics — QBR ↔ Customer health review</h6>
+                <p class="ai">Best fix: move Customer health review to Mon 2:00 PM · affects 4 people</p>
+                <div class="acts"><span class="btn sm">Preview</span><span class="btn sm pri">Apply</span><span class="why">All fixes</span><span class="fb"><span class="e">👍</span><span class="e">👎</span></span></div>
+              </div>
+              <div class="card ai">
+                <div class="ct"><span class="sev hi">High</span><b><span class="e">🚗</span> Travel</b><span>Mon 12:00 PM</span></div>
+                <h6>Cobalt onsite (Palo Alto) → lunch &amp; learn (SF HQ)</h6>
+                <p class="ai">30 min gap, 40 min drive. Best fix: join the lunch virtually · affects 1</p>
+                <div class="acts"><span class="btn sm">Preview</span><span class="btn sm pri">Apply</span><span class="why">Why?</span><span class="fb"><span class="e">👍</span><span class="e">👎</span></span></div>
+              </div>
+              <span class="more">+1 more (focus intrusion, Tue) · Open Conflict center ›</span>
+
+              <div class="sec">Insights<b class="co in">9</b></div>
+              <div class="card ai">
+                <h6>Focus at risk next week</h6>
+                <p>Forecast 5 h of focus vs your 10 h goal · 72% chance meetings pass your 20 h limit</p>
+                <div class="acts"><span class="btn sm pri">Protect 3 blocks</span><span class="btn sm">Preview</span><span class="why">Why?</span><span class="fb"><span class="e">👍</span><span class="e">👎</span></span></div>
+              </div>
+              <div class="card ai">
+                <h6>Shorten Weekly CS team meeting to 45 min</h6>
+                <p>Ends after 38 min on average (8 weeks) · saves ~$670 / month</p>
+                <div class="acts"><span class="btn sm pri">Draft message</span><span class="btn sm">Dismiss</span><span class="why">Why?</span><span class="fb"><span class="e">👍</span><span class="e">👎</span></span></div>
+              </div>
+
+              <div class="sec">Up next<b class="co in">10</b></div>
+              <div class="card ai">
+                <div class="ct"><b>11:30 AM · Sync: QBR deck review</b><span>in 10 min</span></div>
+                <p>Prep: deck v2 has 4 open comments · QBR with Brightwave is Fri</p>
+                <p class="ai"><span class="e ai">⏰</span> Reminder 11:25: 5 min is enough (internal sync)</p>
+                <div class="acts"><span class="btn sm">Open brief</span><span class="btn sm">Snooze</span><span class="fb"><span class="e">👍</span><span class="e">👎</span></span></div>
+              </div>
+              <div class="card ai">
+                <div class="ct"><b>Fri 2:00 PM · Brightwave Logistics — QBR</b></div>
+                <p class="ai">Plan: prep 30 min at 1:15 PM · follow-up 15 min after, recap drafted</p>
+                <div class="acts"><span class="btn sm pri">Accept plan</span><span class="btn sm">Review</span><span class="why">Why?</span><span class="fb"><span class="e">👍</span><span class="e">👎</span><b class="co" style="top:-13px;right:-13px">11</b></span></div>
+              </div>
+            </aside>
+          </div>
+        </div>
+      </div>
+    </div></div>
+  </div>
+
+  <aside class="legend" aria-label="Callouts for frame 01">
+    <h3>01 · Callouts</h3>
+    <p class="lg-sub"><b>AI</b> = what the AI does · <b>You</b> = what you control · <b>Why · undo</b> = how its choice is explained and reversed.</p>
+    <ol>
+      <li><b class="co">1</b><div><h4>Ask Kairos… (Ctrl+K)</h4>
+        <p><i class="ai">AI</i>Turns a sentence into structured constraints, or into a question about your calendar.</p>
+        <p><i>You</i>Edit the chips before anything runs. Nothing changes until you press Book or Apply.</p>
+        <p><i>Why · undo</i>The chips show what was understood. Every booking ends in an Undo toast.</p></div></li>
+      <li><b class="co">2</b><div><h4>+ New meeting</h4>
+        <p><i class="ai">AI</i>Opens the Schedule assistant, prefilled from your preferences, and ranks real free slots.</p>
+        <p><i>You</i>Attendees, duration, date window, time of day, the focus rule.</p>
+        <p><i>Why · undo</i>Each slot lists ✓ reasons and ⚠ trade-offs. Undo after booking.</p></div></li>
+      <li><b class="co">3</b><div><h4>Conflict badge and ⚠ outlines</h4>
+        <p><i class="ai">AI</i>Detects overlaps, impossible travel and focus intrusions, and ranks them by severity.</p>
+        <p><i>You</i>Open the Conflict center, apply a fix, or keep both on purpose.</p>
+        <p><i>Why · undo</i>Type, severity and events are named, and every fix is previewed before Apply. Shown red in the app; the shape and ⚠ carry the meaning here.</p></div></li>
+      <li><b class="co">4</b><div><h4>Meeting-load bar per day</h4>
+        <p><i class="ai">AI</i>Totals meeting hours per day against your limit (5 h) and feeds the overload forecast.</p>
+        <p><i>You</i>Change the daily limit in Settings.</p>
+        <p><i>Why · undo</i>Hours are printed next to the bar. Display only; nothing is changed.</p></div></li>
+      <li><b class="co">5</b><div><h4>Protected focus (hatched, <span class="e dk">🔒</span>)</h4>
+        <p><i class="ai">AI</i>The focus guardian keeps focus blocks free; at autonomy "Auto" it adds blocks toward your weekly goal (<span class="e ai">✨</span>).</p>
+        <p><i>You</i>Focus goal and autonomy level; drag, unlock or delete any block.</p>
+        <p><i>Why · undo</i>"Protected by Kairos" opens the reason. Undo from the toast or the audit log.</p></div></li>
+      <li><b class="co">6</b><div><h4><span class="e ai">✨</span> AI-created event</h4>
+        <p><i class="ai">AI</i>Marks every event it created or booked for you.</p>
+        <p><i>You</i>Edit it like any other event; the sparkle stays as provenance.</p>
+        <p><i>Why · undo</i>Details show the original request and the slot's reasons. Undo through the audit log.</p></div></li>
+      <li><b class="co">7</b><div><h4>Ghost preview</h4>
+        <p><i class="ai">AI</i>Shows a suggestion as a dashed block before it exists (here: prep for Friday's QBR).</p>
+        <p><i>You</i>Accept, move or ignore it. Ghosts never notify anyone.</p>
+        <p><i>Why · undo</i>Hover shows the reason. Nothing to undo until you accept.</p></div></li>
+      <li><b class="co">8</b><div><h4>Copilot · Needs attention</h4>
+        <p><i class="ai">AI</i>One card per conflict, with the best-ranked fix and its impact.</p>
+        <p><i>You</i>Preview, Apply, or open all fixes in the Conflict center.</p>
+        <p><i>Why · undo</i>"Affects 4 people" and the reasons are on the card. Undo toast after Apply.</p></div></li>
+      <li><b class="co">9</b><div><h4>Copilot · Insights</h4>
+        <p><i class="ai">AI</i>Forecasts risk (focus at risk next week) and flags recurring meetings that routinely end early.</p>
+        <p><i>You</i>Act (Protect blocks, Draft message) or dismiss.</p>
+        <p><i>Why · undo</i>"Why?" opens the evidence: forecast band, 38-minute average, cost. Applied changes are undoable.</p></div></li>
+      <li><b class="co">10</b><div><h4>Copilot · Up next</h4>
+        <p><i class="ai">AI</i>Shows the next meetings with a prep summary and a smart-reminder plan sized to each one.</p>
+        <p><i>You</i>Open the brief, snooze, accept or edit the plan.</p>
+        <p><i>Why · undo</i>Every reminder carries its "because…". Reset to the default at any time.</p></div></li>
+      <li><b class="co">11</b><div><h4><span class="e dk">👍</span> / <span class="e dk">👎</span> on every AI card</h4>
+        <p><i class="ai">AI</i>Learns from thumbs and from which slot rank you pick (preference learning).</p>
+        <p><i>You</i>Rate any card. <span class="e">👎</span> asks for a one-tap reason.</p>
+        <p><i>Why · undo</i>Feedback is logged with the card's inputs; learned preferences can be reset in Settings.</p></div></li>
+      <li><b class="co">12</b><div><h4>AI status pill</h4>
+        <p><i class="ai">AI</i>Names the engine in use: "Claude · claude-opus-5-5" or "Offline AI" (heuristic parser and templates).</p>
+        <p><i>You</i>Click it for Settings › AI status: test the connection, read the call log.</p>
+        <p><i>Why · undo</i>If Claude fails, Kairos falls back to offline mode and says so; every feature keeps working.</p></div></li>
+    </ol>
+  </aside>
+</section>
+
+<!-- =================================================================
+     02 · COMMAND BAR (Ctrl+K)
+     ================================================================= -->
+<section class="row" id="command-bar">
+  <div class="frame">
+    <div class="fh"><span class="no">02</span><h2>Command bar</h2><small>modal · Ctrl+K on any screen · keyboard-first · results inline</small><a class="up" href="#top">↑ Contents</a></div>
+    <div class="fs"><div class="art" style="--h:30px">
+      <div class="app sk">
+        <aside class="side">
+          <div class="logo"><i></i>Kairos</div>
+          <div class="nav on">Calendar</div><div class="nav">Insights</div><div class="nav">Study mode</div><div class="nav">Settings</div>
+          <div class="sp"></div>
+          <div class="aipill"><span><span class="eng">Claude</span>claude-opus-5-5</span></div>
+        </aside>
+        <div class="main">
+          <div class="top">
+            <span class="btn">Today</span><span class="btn ic">‹</span><span class="btn ic">›</span>
+            <span class="range">Nov 23 – 29, 2026</span><span class="chip">PT · San Francisco ▾</span>
+            <span class="search"><span class="e ai">✨</span><span class="t">Ask Kairos…</span><kbd>Ctrl+K</kbd></span>
+            <span class="sp"></span><span class="btn pri">+ New meeting</span><span class="btn cfx">⚠ 3 conflicts</span>
+          </div>
+          <div class="content">
+            <div class="cal">
+              <div class="wk wk-h"><div></div><div class="dh">Mon <span class="dn">23</span></div><div class="dh">Tue <span class="dn">24</span></div><div class="dh today">Wed <span class="dn">25</span></div><div class="dh hol">Thu <span class="dn">26</span></div><div class="dh">Fri <span class="dn">27</span></div><div class="dh we">Sat <span class="dn">28</span></div><div class="dh we">Sun <span class="dn">29</span></div></div>
+              <div class="wk wk-b">
+                <div class="hrs"></div>
+                <div class="col"><div class="ev k-one" style="--s:8;--e:8.5"></div><div class="ev k-cust" style="--s:10;--e:10.75"></div><div class="ev k-lead" style="--s:13;--e:14"></div><div class="ev k-hire" style="--s:14.5;--e:15.25"></div></div>
+                <div class="col"><div class="ev k-team" style="--s:8;--e:9"></div><div class="ev k-lead" style="--s:10;--e:11"></div><div class="ev k-focus" style="--s:13;--e:15"></div></div>
+                <div class="col"><div class="ev k-one" style="--s:8.5;--e:9"></div><div class="ev k-cust" style="--s:9.5;--e:10.25"></div><div class="ev k-team" style="--s:11.5;--e:12"></div><div class="ev k-lead" style="--s:14;--e:15"></div><div class="ev k-focus" style="--s:15.5;--e:17"></div></div>
+                <div class="col offday"></div>
+                <div class="col"><div class="ev k-lead" style="--s:10;--e:11"></div><div class="ev k-cust cf l" style="--s:14;--e:15"></div><div class="ev k-lead cf r" style="--s:14;--e:15"></div></div>
+                <div class="col offday"></div><div class="col offday"></div>
+              </div>
+            </div>
+            <aside class="rail">
+              <div class="rail-h"><span class="e ai">✨</span> Copilot</div>
+              <div class="skc"><span class="ph w60"></span><span class="ph w90"></span><span class="ph w45"></span></div>
+              <div class="skc"><span class="ph w75"></span><span class="ph w90"></span><span class="ph w30"></span></div>
+              <div class="skc"><span class="ph w60"></span><span class="ph w75"></span><span class="ph w45"></span></div>
+              <div class="skc"><span class="ph w45"></span><span class="ph w90"></span><span class="ph w60"></span></div>
+            </aside>
+          </div>
+        </div>
+
+        <div class="scrim"></div>
+        <div class="cmdk" role="dialog" aria-label="Command bar">
+          <div class="cmd-in"><span class="e ai">✨</span><span class="typed">Find 45 min with Priya and Alex next week, mornings<span class="caret"></span></span><kbd>Esc</kbd><b class="co tl">1</b></div>
+          <div class="cmd-chips">
+            <span class="mut" style="font-size:11px">Understood as</span>
+            <span class="chip ai">Attendees: Priya Nair, Alex Kim <span class="x">✕</span></span>
+            <span class="chip ai">45 min <span class="x">✕</span></span>
+            <span class="chip ai">Next week <span class="x">✕</span></span>
+            <span class="chip ai">Morning <span class="x">✕</span></span>
+            <span class="sp"></span>
+            <span class="badge ai" style="text-transform:none;letter-spacing:0">Claude · 1.4 s<b class="co" style="top:-14px;left:-14px">3</b></span>
+            <b class="co bl">2</b>
+          </div>
+          <div class="cmd-res">
+            <div class="lbl2">Ranked slots <span class="n">· times in PT · all 3 attendees</span></div>
+            <div class="res on"><span class="rk">1</span><span class="w">Fri Dec 4 · 8:00–8:45 AM</span><span class="score"><span class="bar" style="--v:82%"><i></i></span>0.82</span><span class="rw"><span class="ok">all 3 free</span><span class="wn">Priya 9:30 PM IST</span></span><span class="btn sm pri">Book ↵</span></div>
+            <div class="res"><span class="rk alt">2</span><span class="w">Tue Dec 1 · 9:15–10:00 AM</span><span class="score"><span class="bar" style="--v:71%"><i></i></span>0.71</span><span class="rw"><span class="wn">no buffer after standup</span><span class="wn">Priya 10:45 PM</span></span><span class="btn sm">Book</span></div>
+            <div class="res"><span class="rk alt">3</span><span class="w">Mon Nov 30 · 7:15–8:00 AM</span><span class="score"><span class="bar" style="--v:64%"><i></i></span>0.64</span><span class="rw"><span class="ok">least late for Priya</span><span class="wn">before your hours</span></span><span class="btn sm">Book</span></div>
+            <div class="cmd-more"><span>Open in Schedule assistant <kbd>Ctrl+Enter</kbd></span><span>↑↓ or hover shows a ghost on the calendar</span><span class="why">Why these slots?</span></div>
+            <b class="co" style="top:30px;left:-12px">4</b>
+          </div>
+          <div class="cmd-f"><span><kbd>↑</kbd> <kbd>↓</kbd> choose</span><span><kbd>↵</kbd> book</span><span><kbd>Tab</kbd> edit chips</span><span><kbd>Esc</kbd> close</span><span class="sp"></span><span>Helpful?</span><span class="fb"><span class="e">👍</span><span class="e">👎</span><b class="co" style="top:-13px;right:-13px">7</b></span></div>
+        </div>
+      </div>
+
+      <div class="states">
+        <div class="state"><div class="sl">B · Conflicts question</div><div class="sb">
+          <div class="mini-cmd"><span class="e ai">✨</span><span class="t">any conflicts next week?</span><span class="badge ai">Claude</span></div>
+          <b>Next week: 2 conflicts, 1 warning</b>
+          <div class="ln"><span class="sev hi">High</span><span>Mon 12:00 · Cobalt onsite → lunch &amp; learn (travel)</span></div>
+          <div class="ln"><span class="sev lo">Low</span><span>Tue 10:30 · Vendor demo inside a focus block</span></div>
+          <div class="ln"><span class="sev md">Warn</span><span>Wed · 7.3 h of meetings (your limit is 5 h)</span></div>
+          <div class="ln"><span class="btn sm">Fix first one…</span><span class="more">Open Conflict center ›</span></div>
+          <b class="co tr">5</b>
+        </div></div>
+        <div class="state"><div class="sl">C · Analytics question</div><div class="sb">
+          <div class="mini-cmd"><span class="e ai">✨</span><span class="t">how much time did I spend with customers in October?</span><span class="badge ai">Claude</span></div>
+          <div class="big">19 h<small>in customer meetings · 27% of meeting time</small></div>
+          <div class="minibars" aria-label="Customer hours per week in October"><i style="height:68%"></i><i style="height:76%"></i><i class="hl" style="height:83%"></i><i style="height:61%"></i></div>
+          <span class="mut">▲ 2.5 h vs September · top accounts: Brightwave, Cobalt Health</span>
+          <span class="note">Computed from your calendar by the analytics engine. Claude only interpreted the question.</span>
+          <div class="ln"><span class="btn sm">Open Insights ›</span></div>
+          <b class="co tr">5</b>
+        </div></div>
+        <div class="state"><div class="sl">D · Offline fallback + clarifying question</div><div class="sb">
+          <div class="mini-cmd"><span class="e ai">✨</span><span class="t">quick sync w/ the EMEA lead thurs</span><span class="badge">Offline</span></div>
+          <span class="note">Claude is unavailable (timed out), so the offline parser read this. One thing to confirm:</span>
+          <div class="ln"><span class="chip q">Who is "the EMEA lead"? ▾</span><span class="chip ai">30 min</span><span class="chip ai">Thu Dec 3</span></div>
+          <div class="pick"><div>Emma Clarke · Head of EMEA Success · London</div><div class="mut">Search people…</div></div>
+          <div class="ln"><span class="btn sm">Retry with Claude</span><span class="mut">or pick and continue offline</span></div>
+          <b class="co tr">6</b>
+        </div></div>
+      </div>
+    </div></div>
+
+    <div class="flow" id="flow-1a">
+      <h4><span class="fid">FLOW 1A</span>Schedule a meeting from the command bar <small>· full diagram: docs/03, Flow 1</small></h4>
+      <ol class="steps">
+        <li><div class="st"><b>Step 1</b>Ctrl+K on any screen</div></li>
+        <li><div class="st"><b>Step 2</b>Type the request</div></li>
+        <li><div class="st q ai"><b>Parsed?</b>Claude, else the offline parser</div></li>
+        <li><div class="st ai"><b>Step 3</b>Check or edit the chips</div></li>
+        <li><div class="st ai"><b>Step 4</b>Ranked slots; ↑↓ shows a ghost</div></li>
+        <li><div class="st"><b>Step 5</b>Book → confirm title and <span class="e ai">✨</span> agenda</div></li>
+        <li><div class="st"><b>Step 6</b>Booked, invites sent<span class="undo">↶ UNDO</span></div></li>
+      </ol>
+      <div class="edges">
+        <span><b>Claude down or slow →</b> offline parser, "Offline" badge, same chips</span>
+        <span><b>Unsure →</b> a dashed chip asks (state D)</span>
+        <span><b>No slot →</b> relaxations: shorten · widen · stretch hours</span>
+        <span><b>Not useful →</b> <span class="e">👎</span> + reason, logged as a new eval case</span>
+      </div>
+    </div>
+  </div>
+
+  <aside class="legend" aria-label="Callouts for frame 02">
+    <h3>02 · Callouts</h3>
+    <p class="lg-sub">The LLM interprets; deterministic engines find slots and compute numbers.</p>
+    <ol>
+      <li><b class="co">1</b><div><h4>Natural-language input</h4>
+        <p><i class="ai">AI</i>Works out the intent (schedule, find conflicts, ask about time) and the details, with one schema-checked Claude call or the offline parser.</p>
+        <p><i>You</i>Type freely; ↑ recalls history; Esc closes with no side effects.</p>
+        <p><i>Why · undo</i>Typing alone never changes the calendar.</p></div></li>
+      <li><b class="co">2</b><div><h4>Interpretation chips</h4>
+        <p><i class="ai">AI</i>Shows what it understood: attendees, duration, date window, time of day.</p>
+        <p><i>You</i>Click or Tab to a chip to change or remove it; results re-rank instantly.</p>
+        <p><i>Why · undo</i>The chips are the explanation. A wrong chip is fixed here, before anything is booked.</p></div></li>
+      <li><b class="co">3</b><div><h4>Engine badge</h4>
+        <p><i class="ai">AI</i>Names the engine that read the request: Claude with its latency, or Offline.</p>
+        <p><i>You</i>Retry with Claude when offline; details in Settings › AI status.</p>
+        <p><i>Why · undo</i>Every call is logged with latency and outcome.</p></div></li>
+      <li><b class="co">4</b><div><h4>Ranked slots, inline</h4>
+        <p><i class="ai">AI</i>The scheduling engine (not the LLM) finds and scores real free slots; Claude only words the reasons.</p>
+        <p><i>You</i>↑↓ to choose (ghost on the calendar), Enter to book, Ctrl+Enter for the full assistant.</p>
+        <p><i>Why · undo</i>Score plus ✓ / ⚠ on every row. Booking has a confirm step and ends in an Undo toast.</p></div></li>
+      <li><b class="co">5</b><div><h4>Conflict and analytics answers</h4>
+        <p><i class="ai">AI</i>The same bar answers questions. Numbers come from the analytics engine, never from the LLM.</p>
+        <p><i>You</i>Jump to the Conflict center or Insights from the answer.</p>
+        <p><i>Why · undo</i>Each answer says where its numbers come from. Read-only.</p></div></li>
+      <li><b class="co">6</b><div><h4>Offline fallback and clarifying</h4>
+        <p><i class="ai">AI</i>If Claude is unavailable, the heuristic parser takes over. Anything it is unsure of becomes a dashed chip that asks.</p>
+        <p><i>You</i>Pick the right person or value, or retry with Claude.</p>
+        <p><i>Why · undo</i>The Offline badge stays visible; nothing is guessed silently.</p></div></li>
+      <li><b class="co">7</b><div><h4>Feedback</h4>
+        <p><i class="ai">AI</i>Logs <span class="e">👍</span> / <span class="e">👎</span> with the request and its interpretation; a <span class="e">👎</span> becomes a new eval case.</p>
+        <p><i>You</i>One tap, optional reason.</p>
+        <p><i>Why · undo</i>Never changes the calendar.</p></div></li>
+    </ol>
+  </aside>
+</section>
+
+<!-- =================================================================
+     03 · SCHEDULE ASSISTANT (right drawer)
+     ================================================================= -->
+<section class="row" id="schedule-assistant">
+  <div class="frame">
+    <div class="fh"><span class="no">03</span><h2>Schedule assistant</h2><small>right drawer · from "+ New meeting" or Ctrl+Enter in the command bar · hovering slot 1</small><a class="up" href="#top">↑ Contents</a></div>
+    <div class="fs"><div class="art" style="--h:34px">
+      <div class="app">
+        <aside class="side">
+          <div class="logo"><i></i>Kairos</div>
+          <div class="nav on">Calendar</div><div class="nav">Insights</div><div class="nav">Study mode</div><div class="nav">Settings</div>
+          <div class="sp"></div>
+          <div class="aipill"><span><span class="eng">Claude</span>claude-opus-5-5</span></div>
+        </aside>
+        <div class="main">
+          <div class="top">
+            <span class="btn">Today</span><span class="btn ic">‹</span><span class="btn ic">›</span>
+            <span class="range">Nov 30 – Dec 6, 2026</span><span class="chip">PT · San Francisco ▾</span>
+            <span class="sp"></span><span class="btn pri foc">+ New meeting</span><span class="btn cfx">⚠ 3 conflicts</span>
+          </div>
+          <div class="content">
+            <div class="cal">
+              <div class="wk wk-h">
+                <div></div>
+                <div class="dh">Mon <span class="dn">30</span><div class="load" style="--w:85%"><i></i>4.3 h</div></div>
+                <div class="dh">Tue <span class="dn">1</span><div class="load" style="--w:40%"><i></i>2.0 h</div></div>
+                <div class="dh">Wed <span class="dn">2</span><div class="load hot" style="--w:100%"><i></i>7.3 h</div></div>
+                <div class="dh">Thu <span class="dn">3</span><div class="load" style="--w:30%"><i></i>1.5 h</div></div>
+                <div class="dh">Fri <span class="dn">4</span><div class="load" style="--w:20%"><i></i>1.0 h</div></div>
+                <div class="dh we">Sat <span class="dn">5</span></div>
+                <div class="dh we">Sun <span class="dn">6</span></div>
+              </div>
+              <div class="wk wk-b">
+                <div class="hrs"><span style="--i:0">7 AM</span><span style="--i:1">8 AM</span><span style="--i:2">9 AM</span><span style="--i:3">10 AM</span><span style="--i:4">11 AM</span><span style="--i:5">12 PM</span><span style="--i:6">1 PM</span><span style="--i:7">2 PM</span><span style="--i:8">3 PM</span><span style="--i:9">4 PM</span><span style="--i:10">5 PM</span><span style="--i:11">6 PM</span><span style="--i:12">7 PM</span></div>
+                <div class="col">
+                  <i class="off" style="--s:7;--e:8"></i><i class="off" style="--s:17.5;--e:20"></i>
+                  <div class="ev k-one" style="--s:8;--e:8.5"><b>1:1 Maya / Emma</b></div>
+                  <div class="ev k-team xs" style="--s:9;--e:9.25"><b>CS leadership standup</b></div>
+                  <div class="ev k-cust wr" style="--s:10;--e:11.5"><b>Cobalt Health — onsite workshop</b><em>Palo Alto</em></div>
+                  <div class="ev tv" style="--s:11.5;--e:12.17" title="40 min drive"><span class="e">🚗</span></div>
+                  <div class="ev k-lead cf ov wr" style="--s:12;--e:13"><b>Lunch &amp; learn</b><em>SF HQ</em></div>
+                  <div class="ev k-lead" style="--s:13;--e:14"><b>Exec staff meeting</b></div>
+                </div>
+                <div class="col">
+                  <i class="off" style="--s:7;--e:8"></i><i class="off" style="--s:17.5;--e:20"></i>
+                  <div class="ev k-team wr" style="--s:8;--e:9"><b>Weekly CS team meeting</b></div>
+                  <div class="ev k-team xs" style="--s:9;--e:9.25"><b>CS leadership standup</b></div>
+                  <div class="ev k-focus wr" style="--s:10;--e:12"><b><span class="e">🔒</span> Focus: FY27 strategy</b></div>
+                  <div class="ev k-ext cf ov wr" style="--s:10.5;--e:11.25"><b>Vendor demo</b></div>
+                  <div class="ev k-focus" style="--s:13;--e:15"><b><span class="e">🔒</span> Focus: deep work</b></div>
+                </div>
+                <div class="col">
+                  <i class="off" style="--s:7;--e:8"></i><i class="off" style="--s:17.5;--e:20"></i>
+                  <div class="ev k-team" style="--s:7.25;--e:7.75"><b>EMEA renewals sync</b></div>
+                  <div class="ev k-one" style="--s:8.5;--e:9"><b>1:1 Maya / Alex</b></div>
+                  <div class="ev k-team xs" style="--s:9;--e:9.25"><b>CS leadership standup</b></div>
+                  <div class="ev k-lead" style="--s:9.5;--e:10.5"><b>Renewal forecast review</b></div>
+                  <div class="ev k-cust" style="--s:10.5;--e:11.25"><b>Fernway — escalation</b></div>
+                  <div class="ev k-hire" style="--s:11.5;--e:12.25"><b>Interview: Senior CSM</b></div>
+                  <div class="ev k-team" style="--s:13;--e:13.5"><b>Sync: support SLA</b></div>
+                  <div class="ev k-hire" style="--s:13.5;--e:14.5"><b>Q1 hiring plan</b></div>
+                  <div class="ev k-team" style="--s:14.5;--e:15.5"><b>Brightwave renewal prep</b></div>
+                  <div class="ev k-lead" style="--s:15.5;--e:16.5"><b>Advisory board planning</b></div>
+                </div>
+                <div class="col">
+                  <i class="off" style="--s:7;--e:8"></i><i class="off" style="--s:17.5;--e:20"></i>
+                  <div class="ev k-team" style="--s:8;--e:8.75"><b>CS tooling sync</b><em>Priya 9:30 PM</em></div>
+                  <div class="ev k-team xs" style="--s:9;--e:9.25"><b>CS leadership standup</b></div>
+                  <div class="ev k-focus" style="--s:13;--e:15"><b><span class="e">🔒</span> Focus: deep work</b></div>
+                  <div class="ev k-one" style="--s:16;--e:16.5"><b>1:1 Jordan / Maya</b></div>
+                </div>
+                <div class="col">
+                  <i class="off" style="--s:7;--e:8"></i><i class="off" style="--s:17.5;--e:20"></i>
+                  <div class="ev ghost wr" style="--s:8;--e:8.75"><b><span class="e ai">✨</span> Slot 1</b><em>preview</em></div>
+                  <div class="ev k-lead wr" style="--s:10;--e:11"><b>Pipeline &amp; renewals</b><em>optional</em></div>
+                  <b class="co" style="top:calc(1 / 13 * 100% - 11px);right:-4px">6</b>
+                </div>
+                <div class="col offday"></div><div class="col offday"></div>
+              </div>
+              <i class="sbar"></i>
+            </div>
+
+            <aside class="drawer" aria-label="Schedule assistant">
+              <div class="dr-h"><h3>Schedule assistant</h3><span class="badge ai">Claude</span><span class="x-close">✕</span></div>
+              <div class="dr-b">
+                <div class="lbl2">Constraints <span class="n">· prefilled from "Find 45 min with Priya and Alex next week, mornings"</span><b class="co" style="top:-6px;right:-8px">1</b></div>
+                <div class="fld"><span>Attendees</span><div class="inp ai"><span class="chip ai">Priya Nair · Bangalore <span class="x">✕</span></span><span class="chip ai">Alex Kim · New York <span class="x">✕</span></span><span class="hint">+ add</span></div></div>
+                <div class="fld"><span>Duration</span><div class="inp ai dd">45 min</div></div>
+                <div class="fld"><span>Date window</span><div class="inp ai dd">Next week · Mon Nov 30 – Fri Dec 4</div></div>
+                <div class="fld"><span>Time of day</span><div><span class="seg"><span>Any</span><span class="on">Morning</span><span>Afternoon</span></span></div></div>
+                <div class="fld"><span>Focus time</span><div class="ln"><span class="tog on"></span>Respect focus time <span class="mut">· never book over <span class="e">🔒</span> blocks</span></div><b class="co" style="top:-4px;right:-8px">2</b></div>
+                <div class="hr"></div>
+                <div class="lbl2">3 ranked slots <span class="n">· times in PT · best first</span><span class="sp"></span><span class="n">9 candidates checked</span></div>
+
+                <div class="slot hov">
+                  <div class="slot-h"><span class="rk">1</span><span class="when">Fri Dec 4 · 8:00 – 8:45 AM</span><span class="score"><span class="bar" style="--v:82%"><i></i></span>0.82</span></div>
+                  <div class="rs"><span class="ok">All 3 attendees free</span><span class="ok">Morning for you</span><span class="ok">No focus block touched</span><span class="wn">Late for Priya (9:30 PM IST)</span></div>
+                  <div class="rs one"><span class="wn">Priya already has 4 late calls this month</span></div>
+                  <div class="lts"><span class="lt good">Maya 8:00 AM PT</span><span class="lt good">Alex 11:00 AM ET</span><span class="lt bad">Priya 9:30 PM IST</span><b class="co in">5</b></div>
+                  <div class="acts"><span class="btn sm pri">Book</span><span class="btn sm">Adjust time</span><span class="why">Score breakdown</span><span class="fb"><span class="e">👍</span><span class="e">👎</span><b class="co" style="top:-13px;right:-13px">10</b></span></div>
+                  <b class="co" style="top:-10px;right:64px">3</b>
+                  <b class="co" style="top:36px;left:-12px">4</b>
+                </div>
+                <div class="slot">
+                  <div class="slot-h"><span class="rk alt">2</span><span class="when">Tue Dec 1 · 9:15 – 10:00 AM</span><span class="score"><span class="bar" style="--v:71%"><i></i></span>0.71</span></div>
+                  <div class="rs"><span class="ok">All 3 attendees free</span><span class="wn">No buffer after standup</span><span class="ok">Lunchtime for Alex, still in hours</span><span class="wn">Late for Priya (10:45 PM IST)</span></div>
+                  <div class="lts"><span class="lt good">Maya 9:15 AM PT</span><span class="lt good">Alex 12:15 PM ET</span><span class="lt bad">Priya 10:45 PM IST</span></div>
+                  <div class="acts"><span class="btn sm">Book</span><span class="why">Score breakdown</span><span class="fb"><span class="e">👍</span><span class="e">👎</span></span></div>
+                </div>
+                <div class="slot">
+                  <div class="slot-h"><span class="rk alt">3</span><span class="when">Mon Nov 30 · 7:15 – 8:00 AM</span><span class="score"><span class="bar" style="--v:64%"><i></i></span>0.64</span></div>
+                  <div class="rs"><span class="ok">Least late for Priya (8:45 PM)</span><span class="wn">Before your working hours</span></div>
+                  <div class="lts"><span class="lt edge">Maya 7:15 AM PT</span><span class="lt good">Alex 10:15 AM ET</span><span class="lt edge">Priya 8:45 PM IST</span></div>
+                  <div class="acts"><span class="btn sm">Book</span><span class="why">Score breakdown</span><span class="fb"><span class="e">👍</span><span class="e">👎</span></span></div>
+                </div>
+              </div>
+            </aside>
+          </div>
+        </div>
+      </div>
+
+      <div class="states">
+        <div class="state"><div class="sl">B · No slot found → relaxations</div><div class="sb">
+          <b>No 45-min morning slot fits all 3 next week.</b>
+          <span class="mut">Example: Alex is out Mon–Thu. Blocking: your focus blocks, attendees' working hours.</span>
+          <div class="lbl2"><span class="e ai">✨</span> Try one change</div>
+          <div class="ln"><span class="btn sm">Shorten to 30 min</span><span class="mut">→ 2 slots</span></div>
+          <div class="ln"><span class="btn sm">Widen the window to Dec 11</span><span class="mut">→ 5 slots</span></div>
+          <div class="ln"><span class="btn sm">Stretch hours: allow 7:00 AM</span><span class="mut">→ 3 slots</span></div>
+          <div class="ln"><span class="btn sm">Make Alex optional</span><span class="mut">→ 4 slots</span></div>
+          <b class="co tr">7</b>
+        </div></div>
+        <div class="state"><div class="sl">C · Book → confirm step</div><div class="sb">
+          <div class="fld"><span>Title</span><div class="inp ai"><span class="e ai">✨</span> Sync: CS tooling feedback from accounts</div></div>
+          <div class="lbl2"><span class="e ai">✨</span> Agenda <span class="n">· drafted by Claude · editable</span></div>
+          <ol class="ag"><li>Top tooling requests from accounts (Alex), 15 min</li><li>What fits the tooling roadmap (Priya), 20 min</li><li>Owners and next steps, 10 min</li></ol>
+          <span class="mut">Fri Dec 4 · 8:00–8:45 AM PT · video link added · invites to 2 people</span>
+          <div class="acts"><span class="btn sm pri">Confirm &amp; send invites</span><span class="btn sm">Back</span><span class="fb"><span class="e">👍</span><span class="e">👎</span></span></div>
+          <b class="co tr">8</b>
+        </div></div>
+        <div class="state"><div class="sl">D · Booked → Undo</div><div class="sb" style="background:none;border:0;padding:0">
+          <div class="toast"><span>✓ Booked Fri Dec 4, 8:00 AM PT · invites sent to 2</span><span class="sp"></span><span class="u">Undo</span><span class="tm">10 s</span></div>
+          <span class="mut">Undo deletes the event and sends cancellations. The booking and the undo both stay in the audit log.</span>
+          <b class="co tr" style="top:-12px;right:-6px">9</b>
+        </div></div>
+      </div>
+    </div></div>
+
+    <div class="flow" id="flow-1b">
+      <h4><span class="fid">FLOW 1B</span>Schedule a meeting from "+ New meeting" <small>· full diagram: docs/03, Flow 1</small></h4>
+      <ol class="steps">
+        <li><div class="st"><b>Step 1</b>+ New meeting</div></li>
+        <li><div class="st"><b>Step 2</b>Drawer opens; focus in Attendees</div></li>
+        <li><div class="st"><b>Step 3</b>Set constraints</div></li>
+        <li><div class="st ai"><b>Step 4</b>Ranked slot cards with reasons</div></li>
+        <li><div class="st ai"><b>Step 5</b>Hover a card = ghost on calendar</div></li>
+        <li><div class="st q ai"><b>Slot found?</b>no → relaxations → re-rank</div></li>
+        <li><div class="st"><b>Step 6</b>Book → confirm title and <span class="e ai">✨</span> agenda</div></li>
+        <li><div class="st"><b>Step 7</b>Booked<span class="undo">↶ UNDO</span></div></li>
+      </ol>
+      <div class="edges">
+        <span><b>Offline →</b> same solver; reasons and agenda from templates</span>
+        <span><b><span class="e">👎</span> a slot →</b> reason (wrong time zone, too early…) → ranking weights adjust</span>
+        <span><b>Esc / ✕ →</b> nothing saved; focus returns to "+ New meeting"</span>
+      </div>
+    </div>
+  </div>
+
+  <aside class="legend" aria-label="Callouts for frame 03">
+    <h3>03 · Callouts</h3>
+    <p class="lg-sub">The solver picks the times; the AI explains them. Nothing is booked without your confirm.</p>
+    <ol>
+      <li><b class="co">1</b><div><h4>Prefilled constraints</h4>
+        <p><i class="ai">AI</i>Fills the form from the command (or from your preferences); AI-filled fields are tinted.</p>
+        <p><i>You</i>Change any field; the list re-ranks live.</p>
+        <p><i>Why · undo</i>Tinted vs plain fields show what came from the AI and what came from you.</p></div></li>
+      <li><b class="co">2</b><div><h4>Respect focus time</h4>
+        <p><i class="ai">AI</i>Treats focus blocks as hard constraints while the toggle is on.</p>
+        <p><i>You</i>Switch it off for this one meeting.</p>
+        <p><i>Why · undo</i>With it off, slots that use focus time are labeled as such.</p></div></li>
+      <li><b class="co">3</b><div><h4>Rank and score bar</h4>
+        <p><i class="ai">AI</i>The solver scores each candidate on preferences, fairness, buffers and focus; rank 1 is best.</p>
+        <p><i>You</i>Pick any slot, not just #1 (the rank you pick is tracked).</p>
+        <p><i>Why · undo</i>"Score breakdown" lists each factor's contribution.</p></div></li>
+      <li><b class="co">4</b><div><h4>✓ reasons and ⚠ warnings</h4>
+        <p><i class="ai">AI</i>Claude (or a template offline) puts the solver's factors into plain words, including who pays the cost.</p>
+        <p><i>You</i>Weigh the trade-offs before booking.</p>
+        <p><i>Why · undo</i>Green ✓ and amber ⚠ in the app; the glyph always carries the meaning.</p></div></li>
+      <li><b class="co">5</b><div><h4>Attendee local-time strip</h4>
+        <p><i class="ai">AI</i>Converts the slot to each attendee's time zone and rates comfort against their working hours.</p>
+        <p><i>You</i>See who gets the late call (☾) before you book; fairness history is shown.</p>
+        <p><i>Why · undo</i>Comfort colors in the app are backed by ✓ / ◐ / ☾ glyphs.</p></div></li>
+      <li><b class="co">6</b><div><h4>Hover = ghost preview</h4>
+        <p><i class="ai">AI</i>Hovering or ↑↓-focusing a card draws the slot on the calendar.</p>
+        <p><i>You</i>See what comes before and after it without committing.</p>
+        <p><i>Why · undo</i>Dashed and labeled "preview"; it disappears when you move away.</p></div></li>
+      <li><b class="co">7</b><div><h4>No slot → relaxations</h4>
+        <p><i class="ai">AI</i>When nothing fits, proposes the smallest changes and how many slots each one unlocks.</p>
+        <p><i>You</i>Choose one, or none. It never relaxes a constraint silently.</p>
+        <p><i>Why · undo</i>Each option names the constraint it loosens.</p></div></li>
+      <li><b class="co">8</b><div><h4>Confirm with an AI-drafted agenda</h4>
+        <p><i class="ai">AI</i>Drafts a title and agenda from the request and recent shared meetings (titles only, if privacy allows).</p>
+        <p><i>You</i>Edit or clear them; Confirm sends the invites.</p>
+        <p><i>Why · undo</i>Labeled "drafted by Claude" or "template".</p></div></li>
+      <li><b class="co">9</b><div><h4>Undo toast</h4>
+        <p><i class="ai">AI</i>Nothing new here; the toast is the safety net for what the AI proposed.</p>
+        <p><i>You</i>Undo from the toast, or later from the audit log.</p>
+        <p><i>Why · undo</i>Undo cancels the event and notifies attendees; both actions are logged.</p></div></li>
+      <li><b class="co">10</b><div><h4>Feedback</h4>
+        <p><i class="ai">AI</i><span class="e">👍</span> / <span class="e">👎</span> and the rank you pick feed the preference learner.</p>
+        <p><i>You</i>Rate a slot; <span class="e">👎</span> asks why (wrong time zone, too early, wrong day).</p>
+        <p><i>Why · undo</i>Learned weights can be reset in Settings.</p></div></li>
+    </ol>
+  </aside>
+</section>
+
+<!-- =================================================================
+     04 · CONFLICT CENTER (right drawer)
+     ================================================================= -->
+<section class="row" id="conflict-center">
+  <div class="frame">
+    <div class="fh"><span class="no">04</span><h2>Conflict center</h2><small>right drawer · from the conflicts badge or a Copilot card · previewing fix 1</small><a class="up" href="#top">↑ Contents</a></div>
+    <div class="fs"><div class="art" style="--h:34px">
+      <div class="app">
+        <aside class="side">
+          <div class="logo"><i></i>Kairos</div>
+          <div class="nav on">Calendar</div><div class="nav">Insights</div><div class="nav">Study mode</div><div class="nav">Settings</div>
+          <div class="sp"></div>
+          <div class="aipill"><span><span class="eng">Claude</span>claude-opus-5-5</span></div>
+        </aside>
+        <div class="main">
+          <div class="top">
+            <span class="btn">Today</span><span class="btn ic">‹</span><span class="btn ic">›</span>
+            <span class="range">Nov 30 – Dec 6, 2026</span><span class="chip">PT · San Francisco ▾</span>
+            <span class="sp"></span><span class="btn pri">+ New meeting</span><span class="btn cfx foc">⚠ 3 conflicts</span>
+          </div>
+          <div class="content">
+            <div class="cal">
+              <div class="banner"><span class="e ai">✨</span><span><b>Previewing fix 1</b> for Fri Nov 27: "Customer health review" moves to Mon 2:00 PM · affects 4 people</span><span class="sp"></span><span class="btn sm">‹ Fri Nov 27</span><span class="btn sm pri">Apply</span><span class="btn sm">Cancel</span><b class="co" style="top:-11px;left:-11px">5</b></div>
+              <div class="wk wk-h">
+                <div></div>
+                <div class="dh">Mon <span class="dn">30</span><div class="load" style="--w:100%"><i></i>5.3 h</div></div>
+                <div class="dh">Tue <span class="dn">1</span><div class="load" style="--w:40%"><i></i>2.0 h</div></div>
+                <div class="dh">Wed <span class="dn">2</span><div class="load hot" style="--w:100%"><i></i>7.3 h</div></div>
+                <div class="dh">Thu <span class="dn">3</span><div class="load" style="--w:30%"><i></i>1.5 h</div></div>
+                <div class="dh">Fri <span class="dn">4</span><div class="load" style="--w:20%"><i></i>1.0 h</div></div>
+                <div class="dh we">Sat <span class="dn">5</span></div>
+                <div class="dh we">Sun <span class="dn">6</span></div>
+              </div>
+              <div class="wk wk-b">
+                <div class="hrs"><span style="--i:0">7 AM</span><span style="--i:1">8 AM</span><span style="--i:2">9 AM</span><span style="--i:3">10 AM</span><span style="--i:4">11 AM</span><span style="--i:5">12 PM</span><span style="--i:6">1 PM</span><span style="--i:7">2 PM</span><span style="--i:8">3 PM</span><span style="--i:9">4 PM</span><span style="--i:10">5 PM</span><span style="--i:11">6 PM</span><span style="--i:12">7 PM</span></div>
+                <div class="col">
+                  <i class="off" style="--s:7;--e:8"></i><i class="off" style="--s:17.5;--e:20"></i>
+                  <div class="ev k-one" style="--s:8;--e:8.5"><b>1:1 Maya / Emma</b></div>
+                  <div class="ev k-team xs" style="--s:9;--e:9.25"><b>CS leadership standup</b></div>
+                  <div class="ev k-cust wr" style="--s:10;--e:11.5"><b>Cobalt Health — onsite workshop</b><em>Palo Alto</em></div>
+                  <div class="ev tv" style="--s:11.5;--e:12.17" title="40 min drive"><span class="e">🚗</span></div>
+                  <div class="ev k-lead cf ov wr" style="--s:12;--e:13"><b>Lunch &amp; learn</b><em>SF HQ</em></div>
+                  <div class="ev k-lead" style="--s:13;--e:14"><b>Exec staff meeting</b></div>
+                  <div class="ev ghost wr" style="--s:14;--e:15"><b><span class="e ai">✨</span> Customer health review</b><em>preview · from Fri</em></div>
+                  <b class="co" style="top:calc(7 / 13 * 100% - 11px);right:-6px">5</b>
+                </div>
+                <div class="col">
+                  <i class="off" style="--s:7;--e:8"></i><i class="off" style="--s:17.5;--e:20"></i>
+                  <div class="ev k-team wr" style="--s:8;--e:9"><b>Weekly CS team meeting</b></div>
+                  <div class="ev k-team xs" style="--s:9;--e:9.25"><b>CS leadership standup</b></div>
+                  <div class="ev k-focus wr" style="--s:10;--e:12"><b><span class="e">🔒</span> Focus: FY27 strategy</b></div>
+                  <div class="ev k-ext cf ov wr" style="--s:10.5;--e:11.25"><b>Vendor demo</b></div>
+                  <div class="ev k-focus" style="--s:13;--e:15"><b><span class="e">🔒</span> Focus: deep work</b></div>
+                </div>
+                <div class="col">
+                  <i class="off" style="--s:7;--e:8"></i><i class="off" style="--s:17.5;--e:20"></i>
+                  <div class="ev k-team" style="--s:7.25;--e:7.75"><b>EMEA renewals sync</b></div>
+                  <div class="ev k-one" style="--s:8.5;--e:9"><b>1:1 Maya / Alex</b></div>
+                  <div class="ev k-team xs" style="--s:9;--e:9.25"><b>CS leadership standup</b></div>
+                  <div class="ev k-lead" style="--s:9.5;--e:10.5"><b>Renewal forecast review</b></div>
+                  <div class="ev k-cust" style="--s:10.5;--e:11.25"><b>Fernway — escalation</b></div>
+                  <div class="ev k-hire" style="--s:11.5;--e:12.25"><b>Interview: Senior CSM</b></div>
+                  <div class="ev k-team" style="--s:13;--e:13.5"><b>Sync: support SLA</b></div>
+                  <div class="ev k-hire" style="--s:13.5;--e:14.5"><b>Q1 hiring plan</b></div>
+                  <div class="ev k-team" style="--s:14.5;--e:15.5"><b>Brightwave renewal prep</b></div>
+                  <div class="ev k-lead" style="--s:15.5;--e:16.5"><b>Advisory board planning</b></div>
+                </div>
+                <div class="col">
+                  <i class="off" style="--s:7;--e:8"></i><i class="off" style="--s:17.5;--e:20"></i>
+                  <div class="ev k-team" style="--s:8;--e:8.75"><b>CS tooling sync</b></div>
+                  <div class="ev k-team xs" style="--s:9;--e:9.25"><b>CS leadership standup</b></div>
+                  <div class="ev k-focus" style="--s:13;--e:15"><b><span class="e">🔒</span> Focus: deep work</b></div>
+                  <div class="ev k-one" style="--s:16;--e:16.5"><b>1:1 Jordan / Maya</b></div>
+                </div>
+                <div class="col">
+                  <i class="off" style="--s:7;--e:8"></i><i class="off" style="--s:17.5;--e:20"></i>
+                  <div class="ev k-lead wr" style="--s:10;--e:11"><b>Pipeline &amp; renewals</b><em>optional</em></div>
+                </div>
+                <div class="col offday"></div><div class="col offday"></div>
+              </div>
+            </div>
+
+            <aside class="drawer" aria-label="Conflict center">
+              <div class="dr-h"><h3>Conflict center</h3><span class="seg"><span class="on">All</span><span>High</span><span>Low</span></span><span class="x-close">✕</span></div>
+              <div class="dr-b">
+                <div class="lbl2">3 conflicts · 2 warnings <span class="n">· by severity, then date</span></div>
+
+                <div class="cfc open">
+                  <div class="cfc-h"><span class="ty">⚠</span><b>Overlap</b><span class="sev hi">High</span><span>Fri Nov 27 · 2:00 – 3:00 PM</span><span class="sp"></span><span class="chev">▾</span></div>
+                  <p><b>Brightwave Logistics — QBR</b> (external, fixed) ↔ <b>Customer health review</b> (you organize)</p>
+                  <p class="mut">Priority 100 vs 68 · Alex is invited to both</p>
+                  <b class="co" style="top:-11px;left:-11px">1</b>
+                  <div class="lbl2" style="margin-top:7px"><span class="e ai">✨</span> Ranked fixes<b class="co in">2</b></div>
+                  <div class="fix sel">
+                    <div class="slot-h"><span class="rk">1</span><span class="when">Move "Customer health review" to Mon 2:00 PM</span><span class="score"><span class="bar" style="--v:86%"><i></i></span>0.86</span></div>
+                    <div class="imp"><span class="pp">affects 4 people</span><span class="ok">all free Mon 2:00 PM</span><span class="ok">the QBR stays put</span><span class="wn">right after Exec staff, no buffer</span><b class="co in">3</b></div>
+                    <div class="acts"><span class="btn sm foc">◉ Previewing</span><span class="btn sm pri">Apply</span><span class="fb"><span class="e">👍</span><span class="e">👎</span></span></div>
+                  </div>
+                  <div class="fix">
+                    <div class="slot-h"><span class="rk alt">2</span><span class="when">Shorten it to 30 min, right after the QBR (3:00 PM)</span><span class="score"><span class="bar" style="--v:66%"><i></i></span>0.66</span></div>
+                    <div class="imp"><span class="pp">affects 4 people</span><span class="ok">same day</span><span class="wn">half the time</span><span class="wn">ends 6:30 PM for Alex (ET)</span></div>
+                    <div class="acts"><span class="btn sm">Preview</span><span class="btn sm">Apply</span></div>
+                  </div>
+                  <div class="fix">
+                    <div class="slot-h"><span class="rk alt">3</span><span class="when">Decline the QBR with a drafted note (Alex covers)</span><span class="score"><span class="bar" style="--v:41%"><i></i></span>0.41</span></div>
+                    <div class="imp"><span class="pp">affects 1 person</span><span class="ok">Alex owns the account</span><span class="wn">customer-facing; renewal ends Feb 28</span></div>
+                    <div class="note ai rel"><span class="e ai">✨</span> "Hi Olivia, a conflict came up on my side. Alex Kim will lead Friday's QBR, and I'll follow up on the renewal timeline next week. Maya" <span class="why">Edit</span><b class="co" style="top:-10px;right:-10px">4</b></div>
+                    <div class="acts"><span class="btn sm">Preview note</span><span class="btn sm">Decline &amp; send</span></div>
+                  </div>
+                </div>
+
+                <div class="cfc">
+                  <div class="cfc-h"><span class="ty e">🚗</span><b>Travel</b><span class="sev hi">High</span><span>Mon Nov 30 · 12:00 PM</span><span class="sp"></span><span class="chev">▸</span></div>
+                  <p>Cobalt onsite (Palo Alto, ends 11:30) → lunch &amp; learn (SF HQ, 12:00): 30 min gap, 40 min drive</p>
+                  <p class="ai-t">Top fix: make it virtual (join the lunch by video) · affects 1 person</p>
+                </div>
+                <div class="cfc">
+                  <div class="cfc-h"><span class="ty e">🔒</span><b>Focus intrusion</b><span class="sev lo">Low</span><span>Tue Dec 1 · 10:30 AM</span><span class="sp"></span><span class="chev">▸</span></div>
+                  <p>Vendor demo: InsightHub inside "Focus: FY27 CS strategy"</p>
+                  <p class="ai-t">Top fix: decline with a drafted note (Nina attends) · affects 1 person</p>
+                </div>
+                <div class="lbl2">Warnings</div>
+                <div class="cfc warnc">
+                  <div class="cfc-h"><b>Overload</b><span class="sev md">Warn</span><span>Wed Dec 2 · 7.3 h of meetings, limit 5 h</span></div>
+                  <p class="ai-t">Suggestion: move 2 flexible meetings to Thu</p>
+                </div>
+                <div class="cfc warnc">
+                  <div class="cfc-h"><b>Outside hours</b><span class="sev md">Warn</span><span>Wed Dec 2 · EMEA renewals sync at 7:15 AM</span></div>
+                </div>
+              </div>
+            </aside>
+          </div>
+        </div>
+      </div>
+
+      <div class="states">
+        <div class="state"><div class="sl">B · Apply → Undo</div><div class="sb" style="background:none;border:0;padding:0">
+          <div class="toast"><span>✓ Moved "Customer health review" to Mon 2:00 PM · attendees notified</span><span class="sp"></span><span class="u">Undo</span><span class="tm">10 s</span></div>
+          <span class="mut">Undo puts it back on Fri at 2:00 PM and sends a correction. Both steps are in the audit log.</span>
+          <b class="co" style="top:-12px;right:-6px">6</b>
+        </div></div>
+        <div class="state"><div class="sl">C · None of these → keep both</div><div class="sb">
+          <b>Keep both meetings?</b>
+          <span class="mut">Tell Kairos why (optional):</span>
+          <div class="ln"><span class="chip">I'll join late</span><span class="chip">Alex covers one</span><span class="chip">Not a real conflict</span><span class="chip">Other…</span></div>
+          <span class="mut">Kairos stops flagging this pair and logs the reason as feedback.</span>
+          <div class="acts"><span class="btn sm pri">Keep both</span><span class="btn sm">Back</span></div>
+          <b class="co tr">7</b>
+        </div></div>
+        <div class="state"><div class="sl">D · Autonomy "Auto": fixes that touch only you</div><div class="sb">
+          <div class="ln"><span class="e ai">✨</span><b>Kairos moved your prep block for the Brightwave QBR to 12:30 PM.</b></div>
+          <span class="mut">A new invite overlapped it. Only your calendar changed.</span>
+          <div class="acts"><span class="btn sm">Undo</span><span class="why">Why?</span><span class="fb"><span class="e">👍</span><span class="e">👎</span></span></div>
+          <span class="note">Conflict resolution is set to Auto in Settings. Fixes that would notify other people still ask first.</span>
+          <b class="co tr">8</b>
+        </div></div>
+      </div>
+    </div></div>
+
+    <div class="flow" id="flow-4">
+      <h4><span class="fid">FLOW 4</span>Resolve a conflict <small>· full diagram: docs/03, Flow 4</small></h4>
+      <ol class="steps">
+        <li><div class="st ai"><b>Step 1</b>Notice it: ⚠ badge, outline or Copilot card</div></li>
+        <li><div class="st"><b>Step 2</b>Open the Conflict center</div></li>
+        <li><div class="st ai"><b>Step 3</b>Expand → ranked fixes</div></li>
+        <li><div class="st ai"><b>Step 4</b>Read impact and reasons</div></li>
+        <li><div class="st ai"><b>Step 5</b>Preview on the calendar</div></li>
+        <li><div class="st q"><b>Accept?</b>yes → Apply · no → next fix</div></li>
+        <li><div class="st"><b>Step 6</b>Applied, attendees notified<span class="undo">↶ UNDO</span></div></li>
+      </ol>
+      <div class="edges">
+        <span><b>Decline →</b> edit the drafted note before it is sent</span>
+        <span><b>None fit →</b> keep both + reason (feedback)</span>
+        <span><b>Autonomy "Auto" →</b> only-you fixes applied and announced, with Undo</span>
+        <span><b>Calendar changed meanwhile →</b> re-detect and re-rank</span>
+      </div>
+    </div>
+  </div>
+
+  <aside class="legend" aria-label="Callouts for frame 04">
+    <h3>04 · Callouts</h3>
+    <p class="lg-sub">Fixes are generated and ranked by the conflict engine; Claude only drafts the words.</p>
+    <ol>
+      <li><b class="co">1</b><div><h4>Conflict list</h4>
+        <p><i class="ai">AI</i>Detects overlaps, impossible travel and focus intrusions (plus overload and outside-hours warnings), with severity from each event's priority.</p>
+        <p><i>You</i>Filter by severity, expand one, or keep both on purpose.</p>
+        <p><i>Why · undo</i>Each item names its type (icon + word), severity (a word, not just a color), date and events.</p></div></li>
+      <li><b class="co">2</b><div><h4>Ranked fixes</h4>
+        <p><i class="ai">AI</i>Builds candidate fixes (move, shorten, make virtual, decline) and ranks them by priority and disruption.</p>
+        <p><i>You</i>Choose any option, not just #1.</p>
+        <p><i>Why · undo</i>Score bar and rank; the factors behind each score are listed.</p></div></li>
+      <li><b class="co">3</b><div><h4>Impact and reasons</h4>
+        <p><i class="ai">AI</i>Counts who is affected and lists ✓ benefits and ⚠ costs for each fix.</p>
+        <p><i>You</i>Compare "affects 4 people" with "affects 1 person" before choosing.</p>
+        <p><i>Why · undo</i>Impact is computed from the attendee list, not estimated by the LLM.</p></div></li>
+      <li><b class="co">4</b><div><h4>Drafted note</h4>
+        <p><i class="ai">AI</i>Claude drafts a short, polite note from the event facts (external names redacted if that setting is on).</p>
+        <p><i>You</i>Edit it before sending; nothing is sent without your click.</p>
+        <p><i>Why · undo</i>Labeled "drafted by Claude" or "template"; sent notes are listed in the audit log.</p></div></li>
+      <li><b class="co">5</b><div><h4>Preview on the calendar</h4>
+        <p><i class="ai">AI</i>Shows the fix in place: the new time as a ghost, plus a banner with its impact.</p>
+        <p><i>You</i>Apply or cancel from the banner or the card; jump back to the original day.</p>
+        <p><i>Why · undo</i>A preview is local: nobody is notified until Apply.</p></div></li>
+      <li><b class="co">6</b><div><h4>Apply → Undo</h4>
+        <p><i class="ai">AI</i>Applies the change and notifies the attendees.</p>
+        <p><i>You</i>Undo from the toast, or later from the audit log.</p>
+        <p><i>Why · undo</i>Undo restores the original time and sends a correction.</p></div></li>
+      <li><b class="co">7</b><div><h4>Keep both, with feedback</h4>
+        <p><i class="ai">AI</i>Stops flagging that pair and learns from the reason you give.</p>
+        <p><i>You</i>Keep both, optionally with a one-tap reason.</p>
+        <p><i>Why · undo</i>The dismissal is logged and can be reverted.</p></div></li>
+      <li><b class="co">8</b><div><h4>Autonomy for conflicts</h4>
+        <p><i class="ai">AI</i>At "Auto", applies fixes that change only your own calendar and announces them.</p>
+        <p><i>You</i>Choose Suggest, Ask or Auto in Settings › Autonomy.</p>
+        <p><i>Why · undo</i>Every auto-fix comes with Why? and Undo, and is logged.</p></div></li>
+    </ol>
+  </aside>
+</section>
+
+<!-- =================================================================
+     05 · EVENT DRAWER
+     ================================================================= -->
+<section class="row" id="event-drawer">
+  <div class="frame">
+    <div class="fh"><span class="no">05</span><h2>Event drawer</h2><small>right drawer · opened from an event or an "Up next" card · Brightwave QBR</small><a class="up" href="#top">↑ Contents</a></div>
+    <div class="fs"><div class="art" style="--h:34px">
+      <div class="app">
+        <aside class="side">
+          <div class="logo"><i></i>Kairos</div>
+          <div class="nav on">Calendar</div><div class="nav">Insights</div><div class="nav">Study mode</div><div class="nav">Settings</div>
+          <div class="sp"></div>
+          <div class="aipill"><span><span class="eng">Claude</span>claude-opus-5-5</span></div>
+        </aside>
+        <div class="main">
+          <div class="top">
+            <span class="btn">Today</span><span class="btn ic">‹</span><span class="btn ic">›</span>
+            <span class="range">Nov 23 – 29, 2026</span><span class="chip">PT · San Francisco ▾</span>
+            <span class="sp"></span><span class="btn pri">+ New meeting</span><span class="btn cfx">⚠ 3 conflicts</span>
+          </div>
+          <div class="content">
+            <div class="cal">
+              <div class="wk wk-h">
+                <div></div>
+                <div class="dh">Mon <span class="dn">23</span></div>
+                <div class="dh">Tue <span class="dn">24</span></div>
+                <div class="dh today">Wed <span class="dn">25</span></div>
+                <div class="dh hol">Thu <span class="dn">26</span></div>
+                <div class="dh">Fri <span class="dn">27</span></div>
+                <div class="dh we">Sat</div>
+                <div class="dh we">Sun</div>
+              </div>
+              <div class="wk wk-a"><div class="gut">all-day</div><div></div><div></div><div></div><div><span class="allday">Thanksgiving (US)</span></div><div></div><div></div><div></div></div>
+              <div class="wk wk-b">
+                <div class="hrs"><span style="--i:0">7 AM</span><span style="--i:1">8 AM</span><span style="--i:2">9 AM</span><span style="--i:3">10 AM</span><span style="--i:4">11 AM</span><span style="--i:5">12 PM</span><span style="--i:6">1 PM</span><span style="--i:7">2 PM</span><span style="--i:8">3 PM</span><span style="--i:9">4 PM</span><span style="--i:10">5 PM</span><span style="--i:11">6 PM</span><span style="--i:12">7 PM</span></div>
+                <div class="col">
+                  <i class="off" style="--s:7;--e:8"></i><i class="off" style="--s:17.5;--e:20"></i>
+                  <div class="ev k-one" style="--s:8;--e:8.5"><b>1:1 Maya / Emma</b></div>
+                  <div class="ev k-team xs" style="--s:9;--e:9.25"><b>Standup</b></div>
+                  <div class="ev k-cust" style="--s:10;--e:10.75"><b>Cobalt Health</b></div>
+                  <div class="ev k-lead" style="--s:13;--e:14"><b>Exec staff</b></div>
+                  <div class="ev k-hire" style="--s:14.5;--e:15.25"><b>Interview</b></div>
+                  <div class="ev k-team" style="--s:15.5;--e:16"><b>Sync: pricing</b></div>
+                </div>
+                <div class="col">
+                  <i class="off" style="--s:7;--e:8"></i><i class="off" style="--s:17.5;--e:20"></i>
+                  <div class="ev k-team" style="--s:8;--e:9"><b>CS team</b></div>
+                  <div class="ev k-team xs" style="--s:9;--e:9.25"><b>Standup</b></div>
+                  <div class="ev k-lead" style="--s:10;--e:11"><b>Forecast</b></div>
+                  <div class="ev k-focus" style="--s:13;--e:15"><b><span class="e">🔒</span> Focus</b></div>
+                  <div class="ev k-cust" style="--s:15.5;--e:16"><b>Fernway</b></div>
+                </div>
+                <div class="col">
+                  <i class="off" style="--s:7;--e:8"></i><i class="off" style="--s:17.5;--e:20"></i>
+                  <div class="ev k-one" style="--s:8.5;--e:9"><b>1:1 Alex</b></div>
+                  <div class="ev k-team xs" style="--s:9;--e:9.25"><b>Standup</b></div>
+                  <div class="ev k-cust" style="--s:9.5;--e:10.25"><b>Brightwave</b></div>
+                  <div class="ev k-team" style="--s:10.5;--e:11"><b><span class="e ai">✨</span> Sync</b></div>
+                  <div class="ev k-team" style="--s:11.5;--e:12"><b>QBR deck</b></div>
+                  <div class="ev k-hire" style="--s:13;--e:13.75"><b>Interview</b></div>
+                  <div class="ev k-lead" style="--s:14;--e:15"><b>Churn readout</b></div>
+                  <div class="ev k-focus" style="--s:15.5;--e:17"><b><span class="e">🔒</span> Focus</b></div>
+                  <i class="now" style="--t:11.333"></i>
+                </div>
+                <div class="col offday"></div>
+                <div class="col">
+                  <i class="off" style="--s:7;--e:8"></i><i class="off" style="--s:17.5;--e:20"></i>
+                  <div class="ev k-lead" style="--s:10;--e:11"><b>Pipeline</b><em>optional</em></div>
+                  <div class="ev ghost" style="--s:13.25;--e:13.75"><b><span class="e ai">✨</span> Prep</b></div>
+                  <div class="ev k-cust cf l selected" style="--s:14;--e:15"><b>QBR</b></div>
+                  <div class="ev k-lead cf r" style="--s:14;--e:15"><b>Health</b></div>
+                  <b class="co" style="top:calc(6.25 / 13 * 100% - 11px);left:-10px">3</b>
+                </div>
+                <div class="col offday"></div><div class="col offday"></div>
+              </div>
+            </div>
+
+            <aside class="drawer wide" aria-label="Event details">
+              <div class="dr-h"><span class="badge">Customer</span><h3>Brightwave Logistics — QBR</h3><span class="btn sm">Edit</span><span class="x-close">✕</span></div>
+              <div class="dr-b">
+                <div class="meta">
+                  <div><b>Fri Nov 27 · 2:00 – 3:00 PM PT</b> · one-off · organizer Olivia Park (Brightwave)</div>
+                  <div><span class="e">📍</span> Video call · link in the invite</div>
+                  <div class="lts"><span class="lt good">You 2:00 PM PT</span><span class="lt good">Olivia 2:00 PM PT · Oakland</span><span class="lt edge">Alex 5:00 PM ET · end of day</span></div>
+                </div>
+                <div class="alert">⚠ Overlaps "Customer health review" (you organize)<span class="sp"></span><span class="btn sm">Resolve…</span></div>
+                <div class="lbl2">Attendees · 5 <span class="n">· 3 external</span></div>
+                <div class="att">
+                  <span class="av ex">OP</span><span class="who">Olivia Park <span>· COO, Brightwave · organizer</span></span><span class="rsvp">✓ accepted</span>
+                  <span class="av ex">+2</span><span class="who">2 guests <span>· brightwave.example</span></span><span class="rsvp">✓ accepted</span>
+                  <span class="av">MC</span><span class="who">Maya Chen <span>· you</span></span><span class="rsvp">? no reply yet</span>
+                  <span class="av">AK</span><span class="who">Alex Kim <span>· Director, Account Management · New York</span></span><span class="rsvp">✓ accepted</span>
+                </div>
+
+                <div class="blk ai">
+                  <div class="lbl2"><span class="e ai">✨</span> Brief<span class="sp"></span><span class="badge ai">Generated by Claude</span><b class="co" style="top:-6px;right:-22px">1</b></div>
+                  <dl class="brief">
+                    <dt>Purpose</dt><dd>Quarterly review: adoption, renewal timeline, expansion.</dd>
+                    <dt>Context</dt><dd>Contract ends Feb 28 · expansion to two new warehouses is on the table · onboarding sync held Wed.</dd>
+                    <dt>Suggested agenda</dt><dd>1 Adoption metrics (15) · 2 Renewal timeline (20) · 3 Expansion: two warehouses (15) · 4 Next steps (10)</dd>
+                    <dt>Talking points</dt><dd><span class="ph ai w90"></span><span class="ph ai w75"></span><span class="ph ai w60"></span></dd>
+                    <dt>Prep checklist</dt><dd>☐ Adoption dashboard, last 90 days · ☐ Renewal options with Leo · ☐ Warehouse pricing</dd>
+                  </dl>
+                  <div class="acts"><span class="btn sm">↻ Regenerate</span><span class="btn sm">Copy to invite</span><span class="why">Sources (3)</span><span class="fb"><span class="e">👍</span><span class="e">👎</span><b class="co" style="top:-13px;right:-13px">7</b></span></div>
+                </div>
+
+                <div class="blk">
+                  <div class="lbl2">Smart reminders <span class="n">· planned for this meeting</span><span class="sp"></span><span class="btn sm">+ Add</span><b class="co" style="top:-6px;right:-22px">2</b></div>
+                  <div class="rem first"><span class="tog on"></span><div><b>Prep 30 min at 1:15 PM</b><span class="bc">because a customer QBR with 3 external attendees uses your free gap</span></div><span class="btn sm">Edit</span><b class="co" style="top:2px;left:-24px">3</b></div>
+                  <div class="rem"><span class="tog on"></span><div><b>Follow-up 15 min after (3:15 PM)</b><span class="bc">with a drafted recap · <span class="e ai">✨</span> draft ready</span></div><span class="btn sm">Preview</span><b class="co" style="top:2px;left:-24px">5</b></div>
+                  <div class="rem offr"><span class="tog"></span><div><b>Leave by…</b><span class="bc">off: video call, no travel (see state B for an onsite)</span></div><span></span></div>
+                  <div class="rem offr"><span class="tog"></span><div><b>Pop-up 10 min before</b><span class="bc">off: the prep reminder replaces it, so fewer notifications</span></div><span></span></div>
+                  <div class="acts"><span class="btn sm pri">Accept plan</span><span class="btn sm">Reset to default</span><span class="fb"><span class="e">👍</span><span class="e">👎</span></span></div>
+                </div>
+
+                <div class="blk">
+                  <div class="lbl2">Meeting value<b class="co" style="top:-6px;right:-22px">6</b></div>
+                  <div class="mv">
+                    <div><span class="k">Cost (internal time)</span><span class="v">≈ $280</span><span class="s">Maya + Alex × 1 h, before prep</span></div>
+                    <div><span class="k">Priority score</span><span class="v">100 <small class="mut">/ 100</small></span><span class="bar" style="--v:100%;width:100%"><i></i></span></div>
+                  </div>
+                  <div class="factors"><span class="chip">Customer meeting 70</span><span class="chip">External attendees +10</span><span class="chip">High-stakes topic +10</span><span class="chip">One-off +8</span><span class="chip">Senior leader attending +5</span><span class="chip">capped at 100</span></div>
+                  <span class="note ai"><span class="e ai">✨</span> Necessity tip: keep it. It's your highest-priority meeting this week; move the internal review instead.</span>
+                </div>
+              </div>
+            </aside>
+          </div>
+        </div>
+      </div>
+
+      <div class="states">
+        <div class="state"><div class="sl">B · Same planner, onsite meeting</div><div class="sb">
+          <b>Cobalt Health — onsite workshop · Mon 10:00 AM · Palo Alto</b>
+          <div class="rem first"><span class="tog on"></span><div><b>Leave by 9:05 AM</b><span class="bc">because there are 40 min of travel to Palo Alto (+15 min buffer)</span></div><span class="btn sm">Edit</span></div>
+          <span class="wn" style="font-size:11px">You'll leave the 9:00 standup after 5 min</span>
+          <div class="acts"><span class="btn sm">Change buffer</span><span class="btn sm">Switch off</span><span class="fb"><span class="e">👍</span><span class="e">👎</span></span></div>
+          <b class="co tr">4</b>
+        </div></div>
+        <div class="state"><div class="sl">C · Reminder fires · Fri 1:15 PM</div><div class="sb">
+          <div class="notif"><span class="ic"></span><div><b>Prep: Brightwave Logistics — QBR</b>Starts in 45 min · brief ready · 3 checklist items<div class="acts"><span class="btn sm pri">Open brief</span><span class="btn sm">Snooze 10 min</span><span class="fb"><span class="e">👍</span><span class="e">👎</span></span></div></div></div>
+          <span class="mut">A <span class="e">👎</span> here asks why (too early, not needed, wrong place) and tunes future plans.</span>
+          <b class="co tr">7</b>
+        </div></div>
+        <div class="state"><div class="sl">D · Follow-up · Fri 3:15 PM</div><div class="sb">
+          <div class="notif"><span class="ic"></span><div><b><span class="e ai">✨</span> Recap drafted: Brightwave QBR</b>3 decisions · 4 action items · to Olivia, Alex<div class="acts"><span class="btn sm pri">Review &amp; send</span><span class="btn sm">Dismiss</span></div></div></div>
+          <span class="mut">Nothing is sent until you press Send.</span>
+          <b class="co tr">5</b>
+        </div></div>
+      </div>
+    </div></div>
+
+    <div class="flow" id="flow-2">
+      <h4><span class="fid">FLOW 2</span>Set smart reminders <small>· full diagram: docs/03, Flow 2</small></h4>
+      <ol class="steps">
+        <li><div class="st"><b>Step 1</b>Open the event (grid or Up next)</div></li>
+        <li><div class="st ai"><b>Step 2</b>AI reminder plan, each with "because"</div></li>
+        <li><div class="st"><b>Step 3</b>Toggle · edit time · + add</div></li>
+        <li><div class="st q"><b>Autonomy?</b>Auto: active and announced · Ask: Accept plan</div></li>
+        <li><div class="st ai"><b>Step 4</b>Reminders fire: prep · leave by · follow-up</div></li>
+        <li><div class="st"><b>Step 5</b><span class="e">👍</span> / <span class="e">👎</span> on what fired<span class="undo">↶ RESET</span></div></li>
+      </ol>
+      <div class="edges">
+        <span><b>No free gap →</b> shorter prep or an earlier day, flagged</span>
+        <span><b>Location unknown →</b> asks; default buffer</span>
+        <span><b>Offline →</b> rule-based plan, "Template" badge</span>
+        <span><b>Undo →</b> Reset to default; every change is logged</span>
+      </div>
+    </div>
+  </div>
+
+  <aside class="legend" aria-label="Callouts for frame 05">
+    <h3>05 · Callouts</h3>
+    <p class="lg-sub">Fewer, better notifications, each with its reason.</p>
+    <ol>
+      <li><b class="co">1</b><div><h4>Brief</h4>
+        <p><i class="ai">AI</i>Claude writes the purpose, context, suggested agenda, talking points and prep checklist. Invite text is treated as data, never as instructions.</p>
+        <p><i>You</i>Regenerate, edit, copy into the invite, or ignore.</p>
+        <p><i>Why · undo</i>The badge says "Generated by Claude" or "Template" (offline); Sources lists the inputs used.</p></div></li>
+      <li><b class="co">2</b><div><h4>Smart-reminder plan</h4>
+        <p><i class="ai">AI</i>Replaces the fixed 10-minute pop-up with reminders sized to the meeting.</p>
+        <p><i>You</i>Toggle each reminder, edit its time, add your own.</p>
+        <p><i>Why · undo</i>Every reminder states its "because"; Reset to default brings back the plain pop-up.</p></div></li>
+      <li><b class="co">3</b><div><h4>Prep in a real free gap</h4>
+        <p><i class="ai">AI</i>Sizes prep by importance (QBR, external attendees) and places it in a free gap, shown as a ghost.</p>
+        <p><i>You</i>Accept, move or switch it off.</p>
+        <p><i>Why · undo</i>"Uses your free gap" explains the placement; the prep block can be undone.</p></div></li>
+      <li><b class="co">4</b><div><h4>Leave-by alert</h4>
+        <p><i class="ai">AI</i>Estimates travel time to the location plus a buffer, and flags what it cuts into. Off for video calls.</p>
+        <p><i>You</i>Change the buffer or switch it off.</p>
+        <p><i>Why · undo</i>The travel minutes are shown; an unknown location triggers a question, not a guess.</p></div></li>
+      <li><b class="co">5</b><div><h4>Follow-up with a drafted recap</h4>
+        <p><i class="ai">AI</i>Nudges you 15 min after an external meeting, with a recap draft.</p>
+        <p><i>You</i>Review, edit and send, or dismiss.</p>
+        <p><i>Why · undo</i>Drafts are labeled; nothing is sent automatically.</p></div></li>
+      <li><b class="co">6</b><div><h4>Meeting value</h4>
+        <p><i class="ai">AI</i>Cost from internal time, a priority score with its factors, and a necessity tip.</p>
+        <p><i>You</i>Act on the tip or ignore it.</p>
+        <p><i>Why · undo</i>Every factor shows its points; the score is deterministic, not guessed by the LLM.</p></div></li>
+      <li><b class="co">7</b><div><h4>Feedback</h4>
+        <p><i class="ai">AI</i><span class="e">👍</span> / <span class="e">👎</span> tune future briefs and reminder plans.</p>
+        <p><i>You</i>Rate, and pick a reason if you like.</p>
+        <p><i>Why · undo</i>Learned settings can be reset in Settings.</p></div></li>
+    </ol>
+  </aside>
+</section>
+
+<!-- =================================================================
+     06 · INSIGHTS
+     ================================================================= -->
+<section class="row" id="insights">
+  <div class="frame">
+    <div class="fh"><span class="no">06</span><h2>Insights</h2><small>page · where time goes, what's coming, what to change</small><a class="up" href="#top">↑ Contents</a></div>
+    <div class="fs"><div class="art">
+      <div class="app">
+        <aside class="side">
+          <div class="logo"><i></i>Kairos</div>
+          <div class="nav">Calendar</div><div class="nav on">Insights</div><div class="nav">Study mode</div><div class="nav">Settings</div>
+          <div class="sp"></div>
+          <div class="aipill"><span><span class="eng">Claude</span>claude-opus-5-5</span></div>
+        </aside>
+        <div class="main">
+          <div class="page">
+            <div class="pg-h"><h3>Insights</h3><span class="seg"><span class="on">This week</span><span>Month</span><span>Quarter</span></span><span class="chip">vs 8-week average ▾</span><span class="search"><span class="e ai">✨</span><span class="t">Ask about your time…</span><kbd>Ctrl+K</kbd></span></div>
+
+            <div class="kpis">
+              <div class="kpi"><div class="k">Meeting hours · this week</div><div class="v">13.8 h</div><div class="d">▼ 25% vs 8-wk avg 18.4 h (holiday week)</div></div>
+              <div class="kpi"><div class="k">Focus hours vs goal</div><div class="v">3.5 <small>/ 10 h</small></div><div class="prog" style="--v:35%"><i></i></div><div class="d">goal set in Settings</div></div>
+              <div class="kpi"><div class="k">Fragmentation</div><div class="v">0.42</div><div class="d">9 gaps under 30 min · lower is better</div></div>
+              <div class="kpi"><div class="k">After-hours meetings</div><div class="v">0 <small>this week</small></div><div class="d">1 booked next week (Wed 7:15 AM)</div></div>
+              <div class="kpi"><div class="k">Meeting cost / week</div><div class="v">$4,900</div><div class="d">internal attendee time, loaded rates</div></div>
+              <div class="kpi ai"><div class="k"><span class="e ai">✨</span> Workload signal</div><div class="v">Rising</div><div class="d">next week ≈ 22 h · 72% chance over your 20 h limit</div><b class="co tr">1</b></div>
+            </div>
+
+            <div class="gA">
+              <div class="panel">
+                <h5>Time allocation by category <small>· hours per week, 8 weeks</small></h5>
+                <div class="sbars" role="img" aria-label="Stacked weekly hours by category for the 8 weeks from Oct 5 to Nov 23; meetings run 17 to 20 hours a week, 13.8 in the holiday week; focus 3.5 to 6.5 hours.">
+                  <span class="yl" style="bottom:0">0</span><span class="yl" style="bottom:36px">10 h</span><span class="yl" style="bottom:72px">20 h</span><span class="yl" style="bottom:108px">30 h</span>
+                  <div class="b"><i class="c1" style="height:16px"></i><i class="c2" style="height:18px"></i><i class="c3" style="height:16px"></i><i class="c4" style="height:5px"></i><i class="c5" style="height:5px"></i><i class="c6" style="height:22px"></i></div>
+                  <div class="b"><i class="c1" style="height:18px"></i><i class="c2" style="height:20px"></i><i class="c3" style="height:16px"></i><i class="c4" style="height:5px"></i><i class="c5" style="height:7px"></i><i class="c6" style="height:18px"></i></div>
+                  <div class="b"><i class="c1" style="height:20px"></i><i class="c2" style="height:18px"></i><i class="c3" style="height:16px"></i><i class="c4" style="height:5px"></i><i class="c5" style="height:9px"></i><i class="c6" style="height:16px"></i></div>
+                  <div class="b"><i class="c1" style="height:14px"></i><i class="c2" style="height:20px"></i><i class="c3" style="height:16px"></i><i class="c4" style="height:5px"></i><i class="c5" style="height:5px"></i><i class="c6" style="height:23px"></i></div>
+                  <div class="b"><i class="c1" style="height:18px"></i><i class="c2" style="height:22px"></i><i class="c3" style="height:16px"></i><i class="c4" style="height:5px"></i><i class="c5" style="height:5px"></i><i class="c6" style="height:18px"></i></div>
+                  <div class="b"><i class="c1" style="height:22px"></i><i class="c2" style="height:22px"></i><i class="c3" style="height:16px"></i><i class="c4" style="height:5px"></i><i class="c5" style="height:7px"></i><i class="c6" style="height:14px"></i></div>
+                  <div class="b"><i class="c1" style="height:20px"></i><i class="c2" style="height:20px"></i><i class="c3" style="height:16px"></i><i class="c4" style="height:5px"></i><i class="c5" style="height:7px"></i><i class="c6" style="height:16px"></i></div>
+                  <div class="b"><i class="c1" style="height:11px"></i><i class="c2" style="height:18px"></i><i class="c3" style="height:12px"></i><i class="c4" style="height:4px"></i><i class="c5" style="height:5px"></i><i class="c6" style="height:13px"></i></div>
+                </div>
+                <div class="xl"><span>Oct 5</span><span>12</span><span>19</span><span>26</span><span>Nov 2</span><span>9</span><span>16</span><span>23</span></div>
+                <div class="leg"><span><i class="c1"></i>Customer</span><span><i class="c2"></i>Leadership &amp; planning</span><span><i class="c3"></i>Team sync</span><span><i class="c4"></i>1:1</span><span><i class="c5"></i>Hiring</span><span><i class="c6"></i>Focus</span></div>
+              </div>
+
+              <div class="panel ai">
+                <h5><span class="e ai">✨</span> Meeting-load forecast <small>· next 4 weeks, 80% band</small><b class="co in">2</b></h5>
+                <svg viewBox="0 0 400 172" width="100%" role="img" aria-label="Weekly meeting hours: 8 weeks of history and a 4-week forecast with an 80% band. Next week about 22 hours, with a 72% chance of going over the 20-hour limit.">
+                  <g stroke="#e2e2e6" stroke-width="1"><line x1="34" x2="392" y1="104" y2="104"/><line x1="34" x2="392" y1="12" y2="12"/></g>
+                  <line x1="34" x2="392" y1="150" y2="150" stroke="#6b6b70" stroke-width="1"/>
+                  <line x1="34" x2="392" y1="58" y2="58" stroke="#1d1d1f" stroke-width="1.2" stroke-dasharray="5 3"/>
+                  <text x="40" y="52" font-size="9" fill="#1d1d1f">your limit · 20 h</text>
+                  <g font-size="9" fill="#6b6b70">
+                    <text x="0" y="153">0</text><text x="0" y="107">10 h</text><text x="0" y="61">20 h</text><text x="0" y="15">30 h</text>
+                    <text x="34" y="166">Oct 5</text><text x="164" y="166" text-anchor="middle">Nov 2</text><text x="262" y="166" text-anchor="middle">Nov 23</text><text x="392" y="166" text-anchor="end">Dec 21</text>
+                  </g>
+                  <line x1="262" x2="262" y1="12" y2="150" stroke="#a5a5ab" stroke-dasharray="2 3"/>
+                  <text x="266" y="22" font-size="9" fill="#6b6b70">now</text>
+                  <polygon points="261.8,86.8 294.4,32.7 326.9,39.6 359.5,51.1 392,90.2 392,120.1 359.5,83.3 326.9,69.5 294.4,62.6" fill="rgba(91,63,209,.16)"/>
+                  <polyline points="34,71.8 66.5,64.9 99.1,62.6 131.6,71.8 164.2,64.9 196.7,58 229.3,62.6 261.8,86.8" fill="none" stroke="#4a4a4f" stroke-width="2"/>
+                  <polyline points="261.8,86.8 294.4,48.8 326.9,55.7 359.5,67.2 392,106.3" fill="none" stroke="#5b3fd1" stroke-width="2" stroke-dasharray="5 3"/>
+                  <g fill="#4a4a4f"><circle cx="34" cy="71.8" r="2.5"/><circle cx="66.5" cy="64.9" r="2.5"/><circle cx="99.1" cy="62.6" r="2.5"/><circle cx="131.6" cy="71.8" r="2.5"/><circle cx="164.2" cy="64.9" r="2.5"/><circle cx="196.7" cy="58" r="2.5"/><circle cx="229.3" cy="62.6" r="2.5"/><circle cx="261.8" cy="86.8" r="2.5"/></g>
+                  <g fill="#5b3fd1"><circle cx="294.4" cy="48.8" r="3"/><circle cx="326.9" cy="55.7" r="3"/><circle cx="359.5" cy="67.2" r="3"/><circle cx="392" cy="106.3" r="3"/></g>
+                  <text x="298" y="45" font-size="9.5" font-weight="700" fill="#4a2fc0">22 h</text>
+                </svg>
+                <div class="leg"><span><i style="background:#4a4a4f;height:2px"></i>actual</span><span><i style="border-top:2px dashed #5b3fd1;height:0"></i>forecast</span><span><i style="background:rgba(91,63,209,.16)"></i>80% band</span><span><i style="border-top:1.5px dashed #1d1d1f;height:0"></i>your limit</span></div>
+                <p class="note ai" style="margin-top:6px">Next week (Nov 30): 22 h forecast, 80% band 19–25.5 h · <b>72% chance of going over your 20 h limit</b></p>
+              </div>
+
+              <div class="panel">
+                <h5>Model card · backtest<b class="co in">3</b></h5>
+                <dl class="mc">
+                  <dt>Method</dt><dd>Statistical: recurring series plus recent history. No LLM.</dd>
+                  <dt>Inputs</dt><dd>Accepted and tentative invites, recurring rules, holidays, 8 weeks of history</dd>
+                  <dt>Backtest</dt><dd>6 rolling weeks · MAE 1.9 h per week · the 80% band covered 81% of actuals</dd>
+                  <dt>Corrects for</dt><dd>Meetings that are not booked yet (future weeks look light)</dd>
+                  <dt>Limits</dt><dd>Synthetic demo data · PTO not modeled</dd>
+                </dl>
+                <div class="acts"><span class="btn sm">View backtest</span></div>
+              </div>
+            </div>
+
+            <div class="gB">
+              <div class="panel">
+                <h5>Recurring-meeting audit <small>· cost per month from attendee time</small><b class="co in">5</b></h5>
+                <table class="tbl">
+                  <thead><tr><th>Series</th><th class="n">Cost / mo</th><th>Attendance</th><th>Suggestion</th><th></th></tr></thead>
+                  <tbody>
+                    <tr class="hl"><td>Weekly CS team meeting<small>Tue 8:00 · 60 min · 6 people</small></td><td class="n">$2,690</td><td>100%<small>ends at 38 min</small></td><td class="sg"><span class="e ai">✨</span> Shorten to 45 min<small>saves ~$670 / mo</small></td><td><span class="btn sm pri">Apply</span></td></tr>
+                    <tr><td>Pipeline &amp; renewals review<small>Fri 10:00 · 60 min · you're optional</small></td><td class="n">$2,120</td><td>40%<small>your attendance</small></td><td class="sg"><span class="e ai">✨</span> Leave the series; get notes<small>frees 4 h / mo for you</small></td><td><span class="btn sm">Draft message</span></td></tr>
+                    <tr><td>CS tooling sync<small>Thu 8:00 · 45 min · 9:30 PM in Bangalore</small></td><td class="n">$1,360</td><td>90%</td><td class="sg"><span class="e ai">✨</span> Alternate the time for Bangalore<small>4 late calls a month for Priya, Arjun</small></td><td><span class="btn sm">Draft message</span></td></tr>
+                    <tr><td>CS leadership standup<small>Mon–Thu 9:00 · 15 min</small></td><td class="n">$1,450</td><td>96%</td><td>Keep ✓</td><td></td></tr>
+                  </tbody>
+                </table>
+                <div class="acts"><span class="why">Why these?</span><span class="mut" style="font-size:10.5px">Changes go to the organizer as a drafted message if you don't own the series.</span><span class="fb"><span class="e">👍</span><span class="e">👎</span><b class="co" style="top:-13px;right:-13px">6</b></span></div>
+              </div>
+
+              <div class="panel">
+                <h5>When you meet <small>· weekday × hour, 8 weeks</small><b class="co in">4</b></h5>
+                <div class="hm" role="img" aria-label="Heatmap of average meeting load by weekday and hour; Tuesday and Thursday 1 to 3 PM are empty focus time, Friday 1 to 4 PM is light.">
+                  <span></span><span class="hx">8</span><span class="hx">9</span><span class="hx">10</span><span class="hx">11</span><span class="hx">12</span><span class="hx">1</span><span class="hx">2</span><span class="hx">3</span><span class="hx">4</span><span class="hx">5</span>
+                  <span>Mon</span><i class="l3"></i><i class="l4"></i><i class="l2"></i><i class="l2"></i><i class="l1"></i><i class="l4"></i><i class="l2"></i><i class="l3"></i><i class="l2"></i><i class="l1"></i>
+                  <span>Tue</span><i class="l4"></i><i class="l3"></i><i class="l2"></i><i class="l2"></i><i class="l1"></i><i class="l0"></i><i class="l0"></i><i class="l2"></i><i class="l2"></i><i class="l1"></i>
+                  <span>Wed</span><i class="l3"></i><i class="l4"></i><i class="l3"></i><i class="l3"></i><i class="l1"></i><i class="l2"></i><i class="l3"></i><i class="l2"></i><i class="l2"></i><i class="l1"></i>
+                  <span>Thu</span><i class="l3"></i><i class="l3"></i><i class="l2"></i><i class="l2"></i><i class="l1"></i><i class="l0"></i><i class="l0"></i><i class="l2"></i><i class="l3"></i><i class="l1"></i>
+                  <span>Fri</span><i class="l1"></i><i class="l2"></i><i class="l3"></i><i class="l2"></i><i class="l1"></i><i class="q l1"></i><i class="q l1"></i><i class="q l1"></i><i class="l1"></i><i class="l0"></i>
+                </div>
+                <div class="leg"><span>fewer</span><span><i class="l0"></i><i class="l1"></i><i class="l2"></i><i class="l3"></i><i class="l4"></i></span><span>more meetings</span></div>
+                <p class="note ai" style="margin-top:8px"><span class="e ai">✨</span> Fri 1–4 PM is consistently light (outlined). Protect 2 h of focus on Fridays? <span class="btn sm">Protect</span></p>
+              </div>
+
+              <div class="panel">
+                <h5>Top collaborators <small>· last 4 weeks</small></h5>
+                <div class="hb">
+                  <span>Alex Kim</span><i style="--v:100%"></i><span class="n">16 h</span>
+                  <span>Sam Ortiz</span><i style="--v:72%"></i><span class="n">11.5 h</span>
+                  <span>Emma Clarke</span><i style="--v:50%"></i><span class="n">8 h</span>
+                  <span>Nina Alvarez</span><i style="--v:41%"></i><span class="n">6.5 h</span>
+                  <span>Jordan Lee</span><i style="--v:38%"></i><span class="n">6 h</span>
+                </div>
+                <p class="mut" style="font-size:10.5px;margin-top:8px">Hours in shared meetings. Click a name to see your meetings with them.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div></div>
+
+    <div class="flow" id="flow-3">
+      <h4><span class="fid">FLOW 3</span>View analytics and act on a recommendation <small>· full diagram: docs/03, Flow 3</small></h4>
+      <ol class="steps">
+        <li><div class="st"><b>Step 1</b>Open Insights (sidebar or a Copilot "Why?")</div></li>
+        <li><div class="st ai"><b>Step 2</b>Read KPIs and the forecast band</div></li>
+        <li><div class="st ai"><b>Step 3</b>Open a recommendation and its evidence</div></li>
+        <li><div class="st q"><b>Your series?</b>yes → Apply · no → Draft message</div></li>
+        <li><div class="st ai"><b>Step 4</b>Preview the change</div></li>
+        <li><div class="st"><b>Step 5</b>Apply or send<span class="undo">↶ UNDO</span></div></li>
+        <li><div class="st"><b>Step 6</b>KPIs refresh; action in the audit log</div></li>
+      </ol>
+      <div class="edges">
+        <span><b>Wide band →</b> shown as "watch", no action button</span>
+        <span><b><span class="e">👎</span> + reason →</b> hidden; similar ones ranked lower</span>
+        <span><b>Offline →</b> same numbers; template wording</span>
+      </div>
+    </div>
+  </div>
+
+  <aside class="legend" aria-label="Callouts for frame 06">
+    <h3>06 · Callouts</h3>
+    <p class="lg-sub">Numbers come from analytics and a backtested forecaster. The LLM writes words, not numbers.</p>
+    <ol>
+      <li><b class="co">1</b><div><h4>KPI tiles and the workload signal</h4>
+        <p><i class="ai">AI</i>Compares this week with your 8-week baseline and turns the forecast into one signal.</p>
+        <p><i>You</i>Pick the period and baseline; goals and limits come from Settings.</p>
+        <p><i>Why · undo</i>Every tile shows its baseline or goal next to the value. Read-only.</p></div></li>
+      <li><b class="co">2</b><div><h4>Forecast with an 80% band</h4>
+        <p><i class="ai">AI</i>Forecasts the next 4 weeks of meeting hours and the chance of going over your limit.</p>
+        <p><i>You</i>Change the limit; act on it through the Copilot (protect focus, move meetings).</p>
+        <p><i>Why · undo</i>The band shows the uncertainty. No automatic action is taken from a forecast.</p></div></li>
+      <li><b class="co">3</b><div><h4>Model card and backtest</h4>
+        <p><i class="ai">AI</i>States the method, inputs, measured accuracy and known limits of the forecaster.</p>
+        <p><i>You</i>Open the backtest to see forecast against actual, week by week.</p>
+        <p><i>Why · undo</i>If the band's coverage drifts from 80%, the card says so.</p></div></li>
+      <li><b class="co">4</b><div><h4>Heatmap → quiet windows</h4>
+        <p><i class="ai">AI</i>Finds hours that are reliably light and suggests protecting them (outlined cells).</p>
+        <p><i>You</i>Protect, or ignore.</p>
+        <p><i>Why · undo</i>The outlined cells are the evidence; focus blocks can be undone like any change.</p></div></li>
+      <li><b class="co">5</b><div><h4>Recurring-meeting audit</h4>
+        <p><i class="ai">AI</i>Flags series to shorten, leave or move, using cost, attendance, actual length and fairness; drafts the message.</p>
+        <p><i>You</i>Apply (your own series) or send a draft to the organizer, after editing it.</p>
+        <p><i>Why · undo</i>The evidence sits in the row; Apply ends in an Undo toast and an audit entry.</p></div></li>
+      <li><b class="co">6</b><div><h4>Feedback on recommendations</h4>
+        <p><i class="ai">AI</i>Ranks future recommendations lower when you reject similar ones.</p>
+        <p><i>You</i><span class="e">👍</span> / <span class="e">👎</span> with an optional reason.</p>
+        <p><i>Why · undo</i>Hidden recommendations can be restored.</p></div></li>
+    </ol>
+  </aside>
+</section>
+
+<!-- =================================================================
+     07 · SETTINGS
+     ================================================================= -->
+<section class="row" id="settings">
+  <div class="frame">
+    <div class="fh"><span class="no">07</span><h2>Settings</h2><small>page · preferences, autonomy, privacy, AI status, integrations, demo · shown in offline mode</small><a class="up" href="#top">↑ Contents</a></div>
+    <div class="fs"><div class="art">
+      <div class="app">
+        <aside class="side">
+          <div class="logo"><i></i>Kairos</div>
+          <div class="nav">Calendar</div><div class="nav">Insights</div><div class="nav">Study mode</div><div class="nav on">Settings</div>
+          <div class="sp"></div>
+          <div class="aipill offline"><span><span class="eng">Offline AI</span>heuristic + templates</span></div>
+        </aside>
+        <div class="main">
+          <div class="page">
+            <div class="pg-h"><h3>Settings</h3><span class="mut">Changes save automatically and are logged.</span></div>
+            <div class="set">
+              <div class="setc">
+                <div class="panel">
+                  <h5>Profile and working hours<b class="co in">1</b></h5>
+                  <div class="kv">
+                    <span>Name</span><span><b>Maya Chen</b> · VP Customer Success</span>
+                    <span>Time zone</span><div class="inp dd">America/Los_Angeles (PT)</div>
+                    <span>Working days</span><div><span class="seg"><span class="on">Mon</span><span class="on">Tue</span><span class="on">Wed</span><span class="on">Thu</span><span class="on">Fri</span><span>Sat</span><span>Sun</span></span></div>
+                    <span>Working hours</span><div class="ln"><span class="inp dd">8:00 AM</span>–<span class="inp dd">5:30 PM</span></div>
+                    <span>Focus goal</span><div class="ln"><span class="inp dd">10 h / week</span><span class="mut">in blocks of 90 min or more</span></div>
+                  </div>
+                </div>
+                <div class="panel">
+                  <h5>Meeting preferences<b class="co in">2</b></h5>
+                  <div class="kv">
+                    <span>Preferred time</span><div><span class="seg"><span class="on">Any</span><span>Morning</span><span>Afternoon</span></span></div>
+                    <span>Buffer between meetings</span><div class="inp dd">10 min</div>
+                    <span>Max meeting hours / day</span><div class="inp dd">5 h</div>
+                    <span>Max meeting hours / week</span><div class="inp dd">20 h</div>
+                    <span>Learned from your picks</span><div class="ln"><span class="chip ai">prefers Tue–Thu</span><span class="chip ai">avoids Fri afternoons</span><span class="btn sm">Reset learning</span></div>
+                  </div>
+                </div>
+                <div class="panel">
+                  <h5>Privacy <small>· what the AI sees</small><b class="co in">4</b></h5>
+                  <div class="ln"><span class="tog on"></span><b>Send event titles to the AI</b></div>
+                  <p class="mut" style="font-size:11px;margin:2px 0 8px 36px">Off: Claude sees "Customer meeting · 60 min · 3 external" instead of the title.</p>
+                  <div class="ln"><span class="tog on"></span><b>Redact external names</b></div>
+                  <p class="mut" style="font-size:11px;margin:2px 0 8px 36px">"Olivia Park (Brightwave)" is sent as "External 1 (Customer A)".</p>
+                  <p class="note">Attendees are always pseudonymised before an AI call. Text from invites is treated as data, never as instructions.</p>
+                </div>
+                <div class="panel">
+                  <h5>Integrations</h5>
+                  <div class="drop">Drop an .ics file here or <u>browse</u> · last import: work.ics, 214 events, Nov 20</div>
+                  <div class="ln" style="margin-top:8px"><b>Google Calendar</b><span class="mut">requires credentials (a Google Cloud OAuth client)</span><span class="sp"></span><span class="btn sm">Connect</span></div>
+                </div>
+                <div class="panel">
+                  <h5>Demo controls</h5>
+                  <div class="ln"><span class="btn sm">Reset demo data</span><span class="mut">Rebuilds the synthetic Lumora calendar around today and clears the audit log. Asks you to confirm.</span></div>
+                </div>
+              </div>
+
+              <div class="setc">
+                <div class="panel ai">
+                  <h5><span class="e ai">✨</span> Autonomy dial <small>· per action: how much Kairos may do on its own</small><b class="co in">3</b></h5>
+                  <table class="dial">
+                    <thead><tr><th>Action</th><th>Level</th></tr></thead>
+                    <tbody>
+                      <tr><td>Scheduling<small>book meetings you ask for</small></td><td><span class="seg"><span class="on">Suggest</span><span>Ask</span><span>Auto</span></span></td></tr>
+                      <tr><td>Focus protection<small>add and defend focus blocks</small></td><td><span class="seg"><span>Suggest</span><span class="on">Ask</span><span>Auto</span></span></td></tr>
+                      <tr><td>Reminders<small>prep, leave-by and follow-up plans</small></td><td><span class="seg"><span>Suggest</span><span>Ask</span><span class="on">Auto</span></span></td></tr>
+                      <tr><td>Conflict resolution<small>apply fixes</small></td><td><span class="seg"><span class="on">Suggest</span><span>Ask</span><span>Auto</span></span></td></tr>
+                    </tbody>
+                  </table>
+                  <p class="note" style="margin-top:8px"><b>Suggest:</b> a card only. <b>Ask:</b> prepared, one click to confirm. <b>Auto:</b> Kairos acts, tells you, and keeps Undo. Kairos never notifies other people on its own initiative; that always asks first.</p>
+                </div>
+                <div class="panel">
+                  <h5>AI status<b class="co in">5</b></h5>
+                  <div class="kv">
+                    <span>Engine</span><span class="off-dot"><b>Offline AI</b> · heuristic parser and templates</span>
+                    <span>Why offline</span><span>Claude timed out at 10:30; retrying every 5 min</span>
+                    <span>Model when online</span><span>claude-opus-5-5 · schema-checked outputs</span>
+                    <span>Fallback</span><span>Automatic on timeout, error or refusal</span>
+                  </div>
+                  <div class="acts"><span class="btn sm">Test connection</span><span class="mut" style="font-size:10.5px">The API key lives in the server's .env file, never in the UI.</span></div>
+                  <div class="lbl2" style="margin-top:10px">Recent AI calls<b class="co in">6</b></div>
+                  <table class="tbl">
+                    <thead><tr><th>Time</th><th>Task</th><th>Engine</th><th class="n">Latency</th><th>Outcome</th></tr></thead>
+                    <tbody>
+                      <tr><td>11:18</td><td>parse command</td><td>offline</td><td class="n">12 ms</td><td>ok</td></tr>
+                      <tr><td>11:02</td><td>meeting brief</td><td>offline</td><td class="n">9 ms</td><td>ok · template</td></tr>
+                      <tr><td>10:30</td><td>parse command</td><td>claude → offline</td><td class="n">8.0 s</td><td>fallback · timeout</td></tr>
+                      <tr><td>10:12</td><td>decline note</td><td>claude</td><td class="n">2.1 s</td><td>ok · edited by you</td></tr>
+                      <tr><td>09:58</td><td>slot reasons</td><td>claude</td><td class="n">1.6 s</td><td>ok</td></tr>
+                    </tbody>
+                  </table>
+                  <div class="acts"><span class="more">Open the full audit log (includes Undo history) ›</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div></div>
+  </div>
+
+  <aside class="legend" aria-label="Callouts for frame 07">
+    <h3>07 · Callouts</h3>
+    <p class="lg-sub">The controls behind every AI decision. Sidebar pill shows the offline state.</p>
+    <ol>
+      <li><b class="co">1</b><div><h4>Working hours and focus goal</h4>
+        <p><i class="ai">AI</i>The solver treats working hours as constraints; the focus guardian works toward the weekly goal.</p>
+        <p><i>You</i>Days, hours, time zone and the goal.</p>
+        <p><i>Why · undo</i>Slot reasons cite these settings ("inside your hours"); changes are logged.</p></div></li>
+      <li><b class="co">2</b><div><h4>Meeting preferences and learned weights</h4>
+        <p><i class="ai">AI</i>Preferred time, buffer and daily/weekly limits shape slot scores; your picks and thumbs adjust the weights.</p>
+        <p><i>You</i>Edit any value; "Reset learning" clears what was learned.</p>
+        <p><i>Why · undo</i>Learned preferences are shown as chips, not hidden.</p></div></li>
+      <li><b class="co">3</b><div><h4>Autonomy dial</h4>
+        <p><i class="ai">AI</i>Acts at the level you choose for each action type: Suggest, Ask or Auto.</p>
+        <p><i>You</i>One setting each for scheduling, focus protection, reminders and conflict resolution.</p>
+        <p><i>Why · undo</i>Auto always announces what it did and keeps Undo; it never notifies other people on its own.</p></div></li>
+      <li><b class="co">4</b><div><h4>Privacy</h4>
+        <p><i class="ai">AI</i>Receives the minimum: pseudonymised attendees, and titles or external names only if allowed.</p>
+        <p><i>You</i>Two switches; the hint under each shows exactly what is sent.</p>
+        <p><i>Why · undo</i>Invite text is treated as data, never as instructions (prompt-injection guard).</p></div></li>
+      <li><b class="co">5</b><div><h4>AI status</h4>
+        <p><i class="ai">AI</i>Reports the engine in use and falls back to offline on timeout, error or refusal.</p>
+        <p><i>You</i>Test the connection. The key is set on the server, never typed into the UI.</p>
+        <p><i>Why · undo</i>The same state shows in the sidebar pill ("Offline AI").</p></div></li>
+      <li><b class="co">6</b><div><h4>Recent AI calls</h4>
+        <p><i class="ai">AI</i>Logs every call with task, engine, latency and outcome.</p>
+        <p><i>You</i>Open the full audit log, including the Undo history.</p>
+        <p><i>Why · undo</i>This is the trail behind every Undo and every "Why?".</p></div></li>
+    </ol>
+  </aside>
+</section>
+
+<!-- =================================================================
+     08 · STUDY MODE
+     ================================================================= -->
+<section class="row" id="study-mode">
+  <div class="frame">
+    <div class="fh"><span class="no">08</span><h2>Study mode</h2><small>page · facilitator view for moderated usability sessions</small><a class="up" href="#top">↑ Contents</a></div>
+    <div class="fs"><div class="art">
+      <div class="app">
+        <aside class="side">
+          <div class="logo"><i></i>Kairos</div>
+          <div class="nav">Calendar</div><div class="nav">Insights</div><div class="nav on">Study mode</div><div class="nav">Settings</div>
+          <div class="sp"></div>
+          <div class="aipill"><span><span class="eng">Claude</span>claude-opus-5-5</span></div>
+        </aside>
+        <div class="main">
+          <div class="page">
+            <div class="pg-h"><h3>Study mode</h3><span class="rec">Recording · P07</span><span class="timer">00:18:42</span></div>
+            <div class="panel">
+              <div class="ln" style="gap:10px">
+                <span class="mut">Participant ID</span><span class="inp" style="width:90px">P07</span>
+                <span class="mut">Engine</span><span class="seg"><span class="on">Claude</span><span>Offline</span></span>
+                <span class="mut">Round</span><span class="inp dd" style="width:72px">R2</span>
+                <span class="sp"></span><span class="btn sm">End session</span><span class="btn sm">New participant</span>
+                <b class="co" style="top:-10px;left:-10px">1</b>
+              </div>
+            </div>
+            <div class="study">
+              <div class="panel">
+                <h5>Tasks <small>· start the timer when the participant starts reading</small></h5>
+                <table class="tbl">
+                  <thead><tr><th>Task</th><th>Timer</th><th>Success</th><th>SEQ (1–7)</th><th>Notes</th></tr></thead>
+                  <tbody>
+                    <tr><td><b>T1</b> Book a 3-person meeting across time zones</td><td><span class="timer">00:52</span><small>done</small></td><td><span class="rad"><span class="on">Yes</span><span>Partial</span><span>No</span></span></td><td><span class="rad"><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span class="on">6</span><span>7</span></span></td><td><div class="notes">Used Ctrl+K; read the ☾ warning out loud</div></td></tr>
+                    <tr><td><b>T2</b> Resolve the Friday double-booking</td><td><span class="timer">01:37</span><small>done</small></td><td><span class="rad"><span>Yes</span><span class="on">Partial</span><span>No</span></span></td><td><span class="rad"><span>1</span><span>2</span><span>3</span><span class="on">4</span><span>5</span><span>6</span><span>7</span></span></td><td><div class="notes">Didn't find Preview at first</div></td></tr>
+                    <tr><td><b>T3</b> Set reminders for the Cobalt onsite visit</td><td><span class="btn sm pri">■ Stop</span> <span class="timer">00:41</span></td><td><span class="rad"><span>Yes</span><span>Partial</span><span>No</span></span></td><td><span class="rad"><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span></span></td><td><div class="notes empty">notes…</div></td></tr>
+                    <tr><td><b>T4</b> Find an analytics insight and act on it</td><td><span class="btn sm">▶ Start</span></td><td><span class="rad"><span>Yes</span><span>Partial</span><span>No</span></span></td><td><span class="rad"><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span></span></td><td><div class="notes empty">notes…</div></td></tr>
+                    <tr><td><b>T5</b> Undo an AI change, then set its autonomy level</td><td><span class="btn sm">▶ Start</span></td><td><span class="rad"><span>Yes</span><span>Partial</span><span>No</span></span></td><td><span class="rad"><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span></span></td><td><div class="notes empty">notes…</div></td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="panel ai">
+                <h5>Live metrics <small>· P07, this session</small><b class="co in">2</b></h5>
+                <div class="met">
+                  <div><span class="k">Acceptance rate</span><span class="v">67%</span><span class="s">8 of 12 AI proposals</span></div>
+                  <div><span class="k">Undo rate</span><span class="v">8%</span><span class="s">1 of 12 accepted</span></div>
+                  <div><span class="k">Avg. rank picked</span><span class="v">1.4</span><span class="s">1 = top suggestion</span></div>
+                  <div><span class="k">Median time-to-schedule</span><span class="v">38 s</span><span class="s">request → booked</span></div>
+                </div>
+                <p class="mut" style="font-size:11px;margin:8px 0">AI feedback: <span class="e">👍</span> 5 · <span class="e">👎</span> 2 (reasons: "too late for Priya", "wrong day")</p>
+                <div class="acts"><span class="btn sm pri">Export CSV</span><span class="mut" style="font-size:10.5px">kairos-study-P07.csv · tasks, ratings, proposals, undos, feedback</span><b class="co" style="top:-12px;left:-12px">3</b></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div></div>
+  </div>
+
+  <aside class="legend" aria-label="Callouts for frame 08">
+    <h3>08 · Callouts</h3>
+    <p class="lg-sub">Measures the AI instead of adding to it. Tasks follow the usability-test plan.</p>
+    <ol>
+      <li><b class="co">1</b><div><h4>Participant and engine condition</h4>
+        <p><i class="ai">AI</i>Runs the session with Claude or with the offline engine, so the two can be compared.</p>
+        <p><i>You</i>The facilitator enters the participant ID and picks the condition and round.</p>
+        <p><i>Why · undo</i>Every logged event carries the participant ID and the engine.</p></div></li>
+      <li><b class="co">2</b><div><h4>Live AI metrics</h4>
+        <p><i class="ai">AI</i>Acceptance, undo rate, average rank picked and time-to-schedule, computed from the proposal and audit log.</p>
+        <p><i>You</i>Watch them live while timing tasks (start/stop, success, SEQ, notes).</p>
+        <p><i>Why · undo</i>Undo rate is a trust signal; an average rank near 1 means the ranking works.</p></div></li>
+      <li><b class="co">3</b><div><h4>Export CSV</h4>
+        <p><i class="ai">AI</i>Exports tasks, ratings, proposals, undos and the reasons behind each <span class="e">👎</span>.</p>
+        <p><i>You</i>Download per participant or for the whole round.</p>
+        <p><i>Why · undo</i>Thumbs-down reasons become new eval cases for the parser and ranker.</p></div></li>
+    </ol>
+  </aside>
+</section>
+
+<!-- =================================================================
+     09 · COMMAND BAR, MOBILE (375 px)
+     ================================================================= -->
+<section class="row narrow" id="mobile-command-bar">
+  <div class="frame">
+    <div class="fh"><span class="no">09</span><h2>Command bar · mobile</h2><small>375 px · full-screen sheet</small></div>
+    <div class="fs"><div class="art">
+      <div class="phone">
+        <div class="sbar-m"><span>9:41</span><span>▮▮▮ ◔</span></div>
+        <div class="m-h"><span class="mut">Cancel</span><b>Ask Kairos</b><span class="badge ai">Claude</span></div>
+        <div class="m-in"><span class="e ai">✨</span><span>Find 45 min with Priya and Alex next week, mornings</span><b class="co" style="top:-10px;right:-8px">1</b></div>
+        <div class="m-chips"><span class="chip ai">Priya Nair</span><span class="chip ai">Alex Kim</span><span class="chip ai">45 min</span><span class="chip ai">Next week</span><span class="chip ai">Morning</span><b class="co" style="top:2px;right:4px">2</b></div>
+        <div class="m-res">
+          <div class="lbl2">Ranked slots <span class="n">· times in PT</span></div>
+          <div class="m-card best">
+            <div class="slot-h"><span class="rk">1</span><span class="when">Fri Dec 4 · 8:00–8:45 AM</span><span class="score">0.82</span></div>
+            <div class="rs one"><span class="ok">All 3 attendees free</span><span class="wn">Late for Priya (9:30 PM IST)</span></div>
+            <div class="lts"><span class="lt good">Maya 8:00 AM</span><span class="lt good">Alex 11:00 AM</span><span class="lt bad">Priya 9:30 PM</span></div>
+            <div style="margin-top:8px"><span class="btn pri wide">Book</span></div>
+            <b class="co" style="top:-10px;right:-8px">3</b>
+          </div>
+          <div class="m-card">
+            <div class="slot-h"><span class="rk alt">2</span><span class="when">Tue Dec 1 · 9:15–10:00 AM</span><span class="score">0.71</span></div>
+            <div class="rs one"><span class="wn">No buffer after standup · Priya 10:45 PM</span></div>
+          </div>
+          <div class="m-card">
+            <div class="slot-h"><span class="rk alt">3</span><span class="when">Mon Nov 30 · 7:15–8:00 AM</span><span class="score">0.64</span></div>
+            <div class="rs one"><span class="wn">Before your working hours</span></div>
+          </div>
+        </div>
+        <div class="m-foot">
+          <span class="mut" style="font-size:10px">After Book:</span>
+          <div class="toast"><span>✓ Booked Fri 8:00 AM</span><span class="sp"></span><span class="u">Undo</span><span class="tm">10 s</span></div>
+          <div class="ln"><span class="btn sm">Open full assistant</span><span class="sp"></span><span class="fb"><span class="e">👍</span><span class="e">👎</span></span></div>
+          <div class="home"></div>
+          <b class="co" style="top:14px;right:4px">4</b>
+        </div>
+      </div>
+    </div></div>
+  </div>
+
+  <aside class="legend" aria-label="Callouts for frame 09">
+    <h3>09 · Callouts</h3>
+    <p class="lg-sub">Same parser, solver and Undo as desktop; layout adapted for touch.</p>
+    <ol>
+      <li><b class="co">1</b><div><h4>Full-screen sheet, input on top</h4>
+        <p><i class="ai">AI</i>The same parser as desktop: Claude, or offline with the badge.</p>
+        <p><i>You</i>Type or dictate; Cancel closes with no side effects.</p>
+        <p><i>Why · undo</i>The engine badge stays in the header.</p></div></li>
+      <li><b class="co">2</b><div><h4>Chips wrap onto two lines</h4>
+        <p><i class="ai">AI</i>Shows its interpretation as chips.</p>
+        <p><i>You</i>Tap a chip to edit it in a bottom sheet.</p>
+        <p><i>Why · undo</i>The chips stay visible above the results.</p></div></li>
+      <li><b class="co">3</b><div><h4>Slot cards with 44 px targets</h4>
+        <p><i class="ai">AI</i>The same ranked slots, reasons and local times as desktop.</p>
+        <p><i>You</i>Tap Book; a confirm sheet (title, agenda) follows.</p>
+        <p><i>Why · undo</i>✓ / ⚠ and ☾ carry the meaning without color.</p></div></li>
+      <li><b class="co">4</b><div><h4>Undo above the thumb zone</h4>
+        <p><i class="ai">AI</i>Nothing new; Undo is the safety net.</p>
+        <p><i>You</i>Undo from the snackbar for 10 s, later from the audit log.</p>
+        <p><i>Why · undo</i>Same audit trail as desktop.</p></div></li>
+    </ol>
+  </aside>
+</section>
+
+<footer class="foot">
+  <p><b>Not shown at this fidelity:</b> day and month views, onboarding, sharing and delegation (EA access), and the design-only features F9–F11 (task time-boxing, team load and fairness, external scheduling agent).</p>
+  <p><b>Source of truth:</b> the running app is the high-fidelity mockup; its e2e tests save screenshots to docs/screenshots/. Flows, interaction principles and accessibility notes: <a href="../../docs/03-prototype-and-flows.md">docs/03-prototype-and-flows.md</a>.</p>
+</footer>
+
+</div>
+</body>
+</html>

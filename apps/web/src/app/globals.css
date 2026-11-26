@@ -1,0 +1,56 @@
+@import "tailwindcss";
+
+:root {
+  --background: #f6f7fb;
+  --surface: #ffffff;
+  --border: #e4e7ee;
+  --ink: #111827;
+  --muted: #6b7280;
+  --primary: #4f46e5;
+  --ai: #7c3aed;
+  --danger: #dc2626;
+  --warn: #d97706;
+  --ok: #059669;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-border: var(--border);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-primary: var(--primary);
+  --color-ai: var(--ai);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+body {
+  background: var(--background);
+  color: var(--ink);
+  font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+}
+
+/* Hatched pattern for protected focus blocks (not colour-only: also carries a lock icon). */
+.focus-hatch {
+  background-image: repeating-linear-gradient(135deg, rgba(16, 185, 129, 0.16) 0 6px, rgba(16, 185, 129, 0.06) 6px 12px);
+}
+
+.ghost-slot {
+  background-image: repeating-linear-gradient(135deg, rgba(124, 58, 237, 0.14) 0 6px, rgba(124, 58, 237, 0.05) 6px 12px);
+}
+
+.nonworking {
+  background-image: repeating-linear-gradient(0deg, rgba(100, 116, 139, 0.05) 0 1px, transparent 1px 8px);
+}
+
+@keyframes slide-in {
+  from { transform: translateX(16px); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+.animate-slide-in { animation: slide-in 160ms ease-out; }
+
+:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
