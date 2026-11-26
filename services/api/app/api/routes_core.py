@@ -10,7 +10,7 @@ from pydantic import BaseModel
 from sqlmodel import Session, func, select
 
 from app import __version__
-from app.ai.gateway import ClaudeGateway
+from app.ai.gateway import LLM
 from app.api.deps import gateway_dep, http_errors, now_dep, session_dep
 from app.clock import clock, parse_utc
 from app.config import get_settings
@@ -29,7 +29,7 @@ router = APIRouter(prefix="/api")
 
 
 @router.get("/health")
-def health(session: Session = Depends(session_dep), now: datetime = Depends(now_dep), gw: ClaudeGateway = Depends(gateway_dep)) -> dict[str, Any]:
+def health(session: Session = Depends(session_dep), now: datetime = Depends(now_dep), gw: LLM = Depends(gateway_dep)) -> dict[str, Any]:
     count = session.exec(select(func.count()).select_from(Event)).one()
     return {"status": "ok", "version": __version__, "now": iso(now), "simulated_clock": clock.is_simulated,
             "events": count, "ai": gw.status()}
@@ -37,7 +37,7 @@ def health(session: Session = Depends(session_dep), now: datetime = Depends(now_
 
 # --- profile & preferences -----------------------------------------------------------------------
 @router.get("/me")
-def me(session: Session = Depends(session_dep), gw: ClaudeGateway = Depends(gateway_dep)) -> dict[str, Any]:
+def me(session: Session = Depends(session_dep), gw: LLM = Depends(gateway_dep)) -> dict[str, Any]:
     uid = user_id()
     person = session.get(Person, uid)
     if person is None:

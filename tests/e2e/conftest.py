@@ -56,7 +56,7 @@ def page(browser: Browser) -> Iterator[Page]:
     pg = ctx.new_page()
     errors: list[str] = []
     pg.on("pageerror", lambda e: errors.append(str(e)))
-    pg.goto(BASE)
+    pg.goto(BASE, timeout=60_000)  # a busy dev server can take a while to serve the first page
     pg.get_by_text("Copilot", exact=True).wait_for(timeout=60_000)
     yield pg
     ctx.close()

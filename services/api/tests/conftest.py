@@ -18,6 +18,8 @@ os.environ["KAIROS_NOW"] = FIXED_NOW
 os.environ["KAIROS_AI_MODE"] = "offline"
 os.environ.pop("ANTHROPIC_API_KEY", None)
 os.environ.pop("ANTHROPIC_AUTH_TOKEN", None)
+os.environ["GEMINI_API_KEY"] = ""  # override any key in services/api/.env
+os.environ["GOOGLE_API_KEY"] = ""
 
 from app.clock import clock, parse_utc  # noqa: E402
 from app.config import get_settings  # noqa: E402

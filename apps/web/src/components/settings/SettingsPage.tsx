@@ -102,9 +102,9 @@ function SettingsForm({ me: meData }: { me: Me }) {
           <Card className="space-y-3 p-5">
             <h2 className="flex items-center gap-2 text-sm font-semibold"><Shield className="h-4 w-4" />Privacy (what the AI sees)</h2>
             <label className="flex items-start gap-2 text-sm"><input type="checkbox" checked={p.privacy.send_titles_to_ai ?? true} onChange={(e) => save({ privacy: { send_titles_to_ai: e.target.checked } })} />
-              <span>Send event titles to the AI<span className="block text-[11px] text-muted">Off: Claude sees only “[Customer meeting]”-style categories.</span></span></label>
+              <span>Send event titles to the AI<span className="block text-[11px] text-muted">Off: the AI sees only “[Customer meeting]”-style categories, and descriptions and drafts stay on this device.</span></span></label>
             <label className="flex items-start gap-2 text-sm"><input type="checkbox" checked={p.privacy.redact_external_names ?? true} onChange={(e) => save({ privacy: { redact_external_names: e.target.checked } })} />
-              <span>Pseudonymise external people<span className="block text-[11px] text-muted">Claude sees “External: COO at Brightwave Logistics”, never names or emails.</span></span></label>
+              <span>Pseudonymise external people<span className="block text-[11px] text-muted">The AI sees “External: COO at Brightwave Logistics”, never names or emails.</span></span></label>
             <p className="text-[11px] text-muted">Invite text written by others is always fenced as untrusted data (prompt-injection guard).</p>
           </Card>
 
@@ -125,7 +125,7 @@ function SettingsForm({ me: meData }: { me: Me }) {
             <h2 className="flex items-center gap-2 text-sm font-semibold"><Sparkles className="h-4 w-4 text-ai" />AI engine & activity log</h2>
             <AiBadge engine={calls.data?.status.engine} model={calls.data?.status.model} />
           </div>
-          <p className="text-xs text-muted">{calls.data?.status.reason}. To enable Claude, put <code>ANTHROPIC_API_KEY=…</code> in <code>services/api/.env</code> and restart the API. Content is never logged — only task, engine, latency, tokens and outcome.</p>
+          <p className="text-xs text-muted">{calls.data?.status.reason}. Engines: put <code>ANTHROPIC_API_KEY=…</code> (Claude) and/or <code>GEMINI_API_KEY=…</code> (Gemini; also Claude’s fallback) in <code>services/api/.env</code> and restart the API. Content is never logged — only task, engine, latency, tokens and outcome.</p>
           <div className="max-h-56 overflow-y-auto">
             <table className="w-full text-[11px]">
               <thead><tr className="text-left text-muted"><th>When</th><th>Task</th><th>Engine</th><th>Latency</th><th>Tokens in/out</th><th>Outcome</th></tr></thead>

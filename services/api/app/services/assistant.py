@@ -15,8 +15,8 @@ from typing import Any
 from sqlmodel import Session
 
 from app.ai import heuristic
-from app.ai.briefs import claude_brief, template_brief
-from app.ai.gateway import AIRefused, AIUnavailable, ClaudeGateway
+from app.ai.briefs import llm_brief, template_brief
+from app.ai.gateway import LLM, AIRefused, AIUnavailable
 from app.ai.schemas import Draft, ParsedCommand
 from app.domain.calendar_data import Ev, Snapshot
 from app.domain.timeutils import iso, local_midnight_utc, to_local, week_start
@@ -57,6 +57,8 @@ _STOP = {"my", "the", "a", "an", "with", "meeting", "call", "on", "for", "to", "
 def log_ai(session: Session, task: str, meta: dict[str, Any], outcome: str, detail: str, now: datetime) -> None:
     # Metadata only, never content: the SDK request id (for support tickets) and parser agreement (a free eval signal).
     extras = [f"request {meta['request_id']}"] if meta.get("request_id") else []
+    if meta.get("fallback_from"):
+        extras.append(f"after {meta['fallback_from']}"[:160])
     if "agrees_with_offline" in meta:
         extras.append("same intent as offline parse" if meta["agrees_with_offline"] else "different intent from offline parse")
     detail = " · ".join(d for d in [detail, *extras] if d)
@@ -73,7 +75,7 @@ def _people_prompt(snap_people: dict[str, Any], uid: str, redact_external: bool)
     return ", ".join(names)
 
 
-def parse_command(session: Session, text: str, now: datetime, gw: ClaudeGateway) -> tuple[ParsedCommand, dict[str, Any]]:
+def parse_command(session: Session, text: str, now: datetime, gw: LLM) -> tuple[ParsedCommand, dict[str, Any]]:
     people = load_people(session)
     uid = user_id()
     tzname = people[uid].timezone
@@ -96,11 +98,11 @@ def parse_command(session: Session, text: str, now: datetime, gw: ClaudeGateway)
             return parsed, meta
         except AIRefused as e:
             meta = {"engine": "offline", "fallback_reason": str(e), "latency_ms": offline_ms}
-            log_ai(session, "parse_intent", {"engine": "claude", "model": gw.settings.model}, "refusal", str(e), now)
+            log_ai(session, "parse_intent", {"engine": gw.name, "model": gw.model}, "refusal", str(e), now)
             return offline, meta
         except AIUnavailable as e:
             meta = {"engine": "offline", "fallback_reason": str(e), "latency_ms": offline_ms}
-            log_ai(session, "parse_intent", {"engine": "claude", "model": gw.settings.model}, "fallback", str(e), now)
+            log_ai(session, "parse_intent", {"engine": gw.name, "model": gw.model}, "fallback", str(e), now)
             return offline, meta
     meta = {"engine": "offline", "fallback_reason": gw.status()["reason"], "latency_ms": offline_ms}
     log_ai(session, "parse_intent", meta, "ok", "offline engine", now)
@@ -187,7 +189,7 @@ def _chips(parsed: ParsedCommand, people: dict[str, Any], att_ids: list[str], op
     return chips
 
 
-def handle_command(session: Session, text: str, now: datetime, gw: ClaudeGateway) -> dict[str, Any]:
+def handle_command(session: Session, text: str, now: datetime, gw: LLM) -> dict[str, Any]:
     parsed, meta = parse_command(session, text, now, gw)
     uid = user_id()
     people = load_people(session)
@@ -314,7 +316,7 @@ def handle_command(session: Session, text: str, now: datetime, gw: ClaudeGateway
                                "examples": HELP_EXAMPLES}}
 
 
-def get_brief(session: Session, event_id: str, now: datetime, gw: ClaudeGateway, refresh: bool = False) -> dict[str, Any]:
+def get_brief(session: Session, event_id: str, now: datetime, gw: LLM, refresh: bool = False) -> dict[str, Any]:
     cached = session.get(BriefCache, event_id)
     if cached and not refresh:
         return {"brief": cached.content, "engine": cached.engine, "cached": True}
@@ -327,11 +329,11 @@ def get_brief(session: Session, event_id: str, now: datetime, gw: ClaudeGateway,
     engine = "template"
     if gw.available:
         try:
-            brief, meta = claude_brief(gw, snap, ev, uid, now, prefs.privacy)
+            brief, meta = llm_brief(gw, snap, ev, uid, now, prefs.privacy)
             log_ai(session, "brief", meta, "ok", "", now)
-            engine = "claude"
+            engine = meta["engine"]
         except (AIUnavailable, AIRefused) as e:
-            log_ai(session, "brief", {"engine": "claude", "model": gw.settings.model}, "fallback", str(e), now)
+            log_ai(session, "brief", {"engine": gw.name, "model": gw.model}, "fallback", str(e), now)
             brief = template_brief(snap, ev, uid, now)
     else:
         brief = template_brief(snap, ev, uid, now)
@@ -351,16 +353,16 @@ DRAFT_SYSTEM = (
 )
 
 
-def polish_draft(session: Session, subject: str, body: str, now: datetime, gw: ClaudeGateway) -> dict[str, Any]:
+def polish_draft(session: Session, subject: str, body: str, now: datetime, gw: LLM) -> dict[str, Any]:
     if not gw.available:
         return {"subject": subject, "body": body, "engine": "template"}
     if not user_prefs(session).privacy.get("send_titles_to_ai", True):
         # Drafts quote event titles and names; with titles kept private they stay on this device.
-        return {"subject": subject, "body": body, "engine": "template", "note": "Not sent to Claude: your privacy settings keep event titles private."}
+        return {"subject": subject, "body": body, "engine": "template", "note": "Not sent to the AI: your privacy settings keep event titles private."}
     try:
         draft, meta = gw.structured(system=DRAFT_SYSTEM, prompt=f"Subject: {subject}\n\n{body}", schema=Draft, effort="low", max_tokens=3000)
         log_ai(session, "draft", meta, "ok", "", now)
-        return {"subject": draft.subject, "body": draft.body, "engine": "claude"}
+        return {"subject": draft.subject, "body": draft.body, "engine": meta["engine"]}
     except (AIUnavailable, AIRefused) as e:
-        log_ai(session, "draft", {"engine": "claude", "model": gw.settings.model}, "fallback", str(e), now)
+        log_ai(session, "draft", {"engine": gw.name, "model": gw.model}, "fallback", str(e), now)
         return {"subject": subject, "body": body, "engine": "template"}

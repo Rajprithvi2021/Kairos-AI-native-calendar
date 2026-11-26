@@ -56,12 +56,14 @@ export function ErrorNote({ error }: { error: unknown }) {
   return <p className="rounded-lg bg-red-50 p-3 text-sm text-red-700" role="alert">{msg || "Something went wrong."} Is the API running on port 8000?</p>;
 }
 
+export const ENGINE_LABEL: Record<string, string> = { claude: "Claude", gemini: "Gemini" };
+
 export function AiBadge({ engine, model }: { engine?: string; model?: string | null }) {
-  const claude = engine === "claude";
+  const llm = engine ? ENGINE_LABEL[engine] : undefined;
   return (
-    <Badge tone={claude ? "violet" : "slate"}>
+    <Badge tone={llm ? "violet" : "slate"}>
       <Sparkles className="h-3 w-3" aria-hidden />
-      {claude ? `Claude${model ? ` · ${model}` : ""}` : engine === "template" ? "Template (offline)" : "Offline engine"}
+      {llm ? `${llm}${model ? ` · ${model}` : ""}` : engine === "template" ? "Template (offline)" : "Offline engine"}
     </Badge>
   );
 }

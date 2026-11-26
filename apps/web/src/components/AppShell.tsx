@@ -9,6 +9,7 @@ import { type ReactNode, useEffect } from "react";
 
 import { CommandBar } from "@/components/CommandBar";
 import { useUi } from "@/components/providers";
+import { ENGINE_LABEL } from "@/components/ui";
 import { api } from "@/lib/api";
 import type { Health } from "@/lib/types";
 
@@ -70,10 +71,10 @@ export function AppShell({ children }: { children: ReactNode }) {
         </ul>
         <div className="mt-auto space-y-2 p-2 text-[11px] text-muted lg:p-4">
           <div className={clsx("flex items-center justify-center gap-2 rounded-lg px-2 py-2 lg:justify-start lg:px-3",
-            health.isError ? "bg-red-50 text-red-700" : ai?.engine === "claude" ? "bg-violet-50 text-violet-700" : "bg-slate-100 text-slate-600")}
+            health.isError ? "bg-red-50 text-red-700" : ai && ai.engine !== "offline" ? "bg-violet-50 text-violet-700" : "bg-slate-100 text-slate-600")}
             title={health.isError ? "API offline — start it with scripts/dev.ps1" : ai?.reason}>
             <Sparkles className="h-3.5 w-3.5 shrink-0" aria-hidden />
-            <span className="sr-only font-medium lg:not-sr-only">{ai ? (ai.engine === "claude" ? `Claude · ${ai.model}` : "Offline AI") : "Connecting…"}</span>
+            <span className="sr-only font-medium lg:not-sr-only">{ai ? (ai.engine !== "offline" ? `${ENGINE_LABEL[ai.engine] ?? ai.engine} · ${ai.model}` : "Offline AI") : "Connecting…"}</span>
           </div>
           {health.data?.simulated_clock && <div className="hidden rounded-lg bg-amber-50 px-3 py-1.5 text-amber-800 lg:block">Simulated clock</div>}
           {health.isError && <div className="hidden rounded-lg bg-red-50 px-3 py-1.5 text-red-700 lg:block">API offline — start it with scripts/dev.ps1</div>}

@@ -12,6 +12,7 @@
 | A modern browser | Edge/Chrome/Firefox | yes | E2E tests drive the installed Edge |
 | Disk | ~1 GB | yes | Dependencies (kept outside OneDrive automatically) |
 | Anthropic API key | — | optional | Enables Claude; without it the offline twin runs everything |
+| Gemini API key (Google AI Studio) | — | optional | Enables Gemini: Claude's fallback, or the main engine when there is no Claude key |
 | Google Cloud project + OAuth client (Calendar API) | — | optional | Live Google Calendar sync (mapping is built and tested; OAuth flow needs your client) |
 | Docker Desktop | — | optional | One-command run via `infra/docker-compose.yml` |
 

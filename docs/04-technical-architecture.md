@@ -327,7 +327,7 @@ Only the scheduler has been timed (§1, N1); every other engine runs inside the 
 
 ## 5. AI layer
 
-### 5.1 ClaudeGateway
+### 5.1 LLM gateway: Claude, then Gemini
 [gateway.py](../services/api/app/ai/gateway.py) is the only module that calls an LLM. Its `structured()` method makes exactly one request:
 
 ```python
@@ -347,9 +347,25 @@ resp = self.client().beta.messages.parse(
 - **Model settings.** No `thinking` and no sampling parameters: on `claude-opus-5-5` thinking is adaptive and cannot be switched off, and `temperature` is rejected. `effort` is the depth control, and it is always set because this model's default is `medium`. The contract test asserts both absences.
 - **Refusals, truncation, validation.** The server-side fallback beta retries a refused request on a fallback model chosen by refusal category; the logged `model` is the one that answered. If the final `stop_reason` is still `refusal`, the gateway raises `AIRefused`. `stop_reason == "max_tokens"`, a missing `parsed_output` or a Pydantic `ValidationError` raises `AIUnavailable`.
 - **Typed error chain.** `AuthenticationError` → `RateLimitError` → `BadRequestError` → `APIStatusError` → `APIConnectionError` (which includes timeouts), each mapped to `AIUnavailable` with a short reason. Callers catch `AIUnavailable` and `AIRefused` and use the offline twin.
-- **Modes.** `KAIROS_AI_MODE=auto` (default: Claude only if `ANTHROPIC_API_KEY`, `ANTHROPIC_AUTH_TOKEN` or a configured key is present), `offline` (never call), `claude` (always try; use it when credentials come from an SDK profile rather than environment variables).
+- **Modes.** `KAIROS_AI_MODE` takes four values:
+  - `auto` (default): Claude if `ANTHROPIC_API_KEY`, `ANTHROPIC_AUTH_TOKEN` or a configured key is present, then Gemini if `GEMINI_API_KEY` is set.
+  - `offline`: never call an LLM.
+  - `claude`: always try Claude first; use it when credentials come from an SDK profile rather than environment variables.
+  - `gemini`: Gemini only.
+- **Chain.** `build_gateway` returns an `AIGateway` that tries each configured engine in order and shares the caller's time budget (8 s for a parse). An outage, timeout or bad output moves on to the next engine, and the row in the call log records what failed first. A refusal stops the chain, because it is a decision, not an outage; the caller's offline twin is always the last resort.
+- **Gemini** (`GeminiGateway`):
+  - It calls the Gemini Developer API over REST with the standard library, so there is no extra dependency. The key travels in the `x-goog-api-key` header, never in the URL.
+  - Output is constrained by the same Pydantic schemas through `responseJsonSchema`, and validated again on receipt.
+  - Parsing (low effort) uses `gemini-3.1-flash-lite`; briefs and drafts use `gemini-3.5-flash-lite`. Both are set by `KAIROS_GEMINI_FAST_MODEL` and `KAIROS_GEMINI_MODEL`.
+  - When the writing model is busy (HTTP 429 or 5xx) or slow, the fast model gets the rest of the budget; the first attempt is capped at 60% of it.
+  - Safety blocks (`blockReason`, or a SAFETY / PROHIBITED_CONTENT / RECITATION finish) become `AIRefused`. `MAX_TOKENS`, empty or invalid JSON, 401/403/404 and network errors become `AIUnavailable`. The response id is logged; thinking tokens count as output tokens.
 - **Call log.** Every parse, brief and draft writes an `AiCallLog` row: task, engine, model, latency, input and output tokens, outcome (`ok`, `fallback`, `refusal`) and a failure reason of at most 300 characters. Prompts and outputs are never stored. The detail column also records metadata only: the SDK request id (for support tickets) and, for parses, whether Claude's intent matched the offline parse, which is a free agreement signal. Settings shows the last 25 calls.
-- **Verification.** Tested with a fake SDK client: the request parameters; refusal → `AIRefused`; truncation and empty output → `AIUnavailable`; a network error → the command still answers from the offline engine, and the log shows `fallback`. **Claude has not been called live** (no API key on this machine).
+- **Verification.** Tested with a fake SDK client: the request parameters; refusal → `AIRefused`; truncation and empty output → `AIUnavailable`; a network error → the command still answers from the offline engine, and the log shows `fallback`. **Claude has not been called live** (no API key on this machine). Gemini is tested with a fake transport: the request shape and key placement, model choice per task, busy and timeout fallback with a split budget, every error mapping, and the chain's order and refusal rule.
+
+  **Gemini, live (26 Nov 2026):**
+  - Parse: 1.4–3.5 s; brief: 5.8 s; draft polish: 1.3 s.
+  - Golden set: 84% action accuracy, 72% exact match. Seven of its 14 misses were API errors or timeouts.
+  - Google returned "high demand" 503s for the flash models during testing. The commonly cited `gemini-2.5-flash` is no longer offered to new keys.
 
 ### 5.2 Tasks, prompts and fallbacks
 
@@ -529,7 +545,7 @@ Topics: `calendar.changed` (normalised provider deltas), `proposal.applied` and 
 | Engines | pytest, Hypothesis | Scheduler 9 (including the property test), conflicts and reminders 7, analytics, forecast and focus 7, time utilities 4 | Pass |
 | AI layer | pytest with a fake SDK client | Offline parser 13, gateway contract and failure modes 5, offline mode, fallback through the API (including the 8 s parse budget and the logged request id), privacy helpers, what the brief and draft prompts may contain under each privacy setting, template brief | Pass |
 | API and integrations | FastAPI TestClient on the seeded world | Every feature's HTTP surface 13; undo safety (refuses to overwrite a later change, always bumps the version, restores only its own dismissal); ICS (recurrence, EXDATE, moved and cancelled occurrences) and Google mapping 3 | Pass |
-| **Backend total** | | **70 tests**; ruff clean | **70 passed** |
+| **Backend total** | | **83 tests**; ruff clean | **83 passed** |
 | NL evals | `evals/run_evals.py` | 51 golden commands; CI gate at ≥ 90% | Offline: 100% action accuracy, 100% exact match |
 | Frontend unit | Vitest | Overlap layout 2; time-zone and DST maths 3 | 5 passed; tsc and ESLint clean; production build succeeds |
 | End to end | Playwright with the installed Microsoft Edge, headless, 1440×900, browser zone Asia/Kolkata | F1–F7, Settings, change history (undo after the toast is gone) and Study mode through the real UI and API; fails on any uncaught page error; recaptures `docs/screenshots` | 10 passed |

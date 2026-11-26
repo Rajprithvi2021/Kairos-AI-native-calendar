@@ -104,6 +104,7 @@ def report(results: list[dict[str, Any]]) -> str:
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--claude", action="store_true", help="also evaluate Claude (requires credentials)")
+    ap.add_argument("--gemini", action="store_true", help="also evaluate Gemini (requires GEMINI_API_KEY)")
     args = ap.parse_args()
     cases = load_cases()
     people = _people()
@@ -124,6 +125,22 @@ def main() -> int:
                 return gw.structured(system=PARSE_SYSTEM, prompt=prompt, schema=ParsedCommand, effort="low")[0]
 
             results.append(score(f"claude ({gw.settings.model})", claude_parse, cases, people))
+    if args.gemini:
+        from app.ai.gateway import GeminiGateway
+        from app.config import get_settings
+        from app.services.assistant import PARSE_SYSTEM
+
+        gem = GeminiGateway(get_settings())
+        if not gem.available:
+            print("Gemini not configured (set GEMINI_API_KEY); skipping.")
+        else:
+            gnames = ", ".join(sorted(p.first_name for p in people if p.id != "maya"))
+
+            def gemini_parse(text: str) -> ParsedCommand:
+                prompt = f"now: {TODAY}T09:00 (Wednesday), user time zone: America/Los_Angeles\ncolleagues (first names): {gnames}\n<request>{text}</request>"
+                return gem.structured(system=PARSE_SYSTEM, prompt=prompt, schema=ParsedCommand, effort="low", timeout_s=20)[0]
+
+            results.append(score(f"gemini ({gem.settings.gemini_fast_model})", gemini_parse, cases, people))
     out = report(results)
     (HERE / "reports").mkdir(exist_ok=True)
     (HERE / "reports" / "latest.md").write_text(out, encoding="utf-8")

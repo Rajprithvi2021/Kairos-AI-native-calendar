@@ -11,13 +11,13 @@ from typing import Any
 from fastapi import HTTPException
 from sqlmodel import Session
 
-from app.ai.gateway import ClaudeGateway
+from app.ai.gateway import LLM, build_gateway
 from app.clock import clock
 from app.config import get_settings
 from app.db import get_engine
 from app.services.ops import VersionConflict
 
-_gateway: ClaudeGateway | None = None
+_gateway: LLM | None = None
 
 
 def session_dep() -> Iterator[Session]:
@@ -29,14 +29,14 @@ def now_dep() -> datetime:
     return clock.now()
 
 
-def gateway_dep() -> ClaudeGateway:
+def gateway_dep() -> LLM:
     global _gateway
     if _gateway is None:
-        _gateway = ClaudeGateway(get_settings())
+        _gateway = build_gateway(get_settings())
     return _gateway
 
 
-def set_gateway(gw: ClaudeGateway | None) -> None:
+def set_gateway(gw: LLM | None) -> None:
     """Test hook: inject a gateway (e.g. one wrapping a fake Anthropic client)."""
     global _gateway
     _gateway = gw

@@ -10,9 +10,9 @@ import pytest
 
 from app.ai import heuristic
 from app.ai.briefs import template_brief
-from app.ai.gateway import AIRefused, AIUnavailable, ClaudeGateway
+from app.ai.gateway import AIGateway, AIRefused, AIUnavailable, ClaudeGateway, GeminiGateway, build_gateway
 from app.ai.privacy import fence_untrusted, person_label
-from app.ai.schemas import ParsedCommand
+from app.ai.schemas import MeetingBrief, ParsedCommand
 from app.config import Settings
 
 TODAY = date(2026, 11, 25)  # Wednesday
@@ -148,16 +148,16 @@ def test_privacy_helpers(world) -> None:
 
 
 def test_claude_prompts_respect_privacy_settings(snap, now, client) -> None:
-    from app.ai.briefs import claude_brief
+    from app.ai.briefs import llm_brief
     from app.api.deps import set_gateway
 
     ev = snap.event("plant_qbr")
     assert ev.description
     gw, msgs = fake_gateway("ok")
-    claude_brief(gw, snap, ev, "maya", now, {"send_titles_to_ai": True, "redact_external_names": True})
+    llm_brief(gw, snap, ev, "maya", now, {"send_titles_to_ai": True, "redact_external_names": True})
     open_prompt = msgs.calls[-1]["messages"][0]["content"]
     assert ev.title in open_prompt and ev.description in open_prompt and "Olivia" not in open_prompt
-    claude_brief(gw, snap, ev, "maya", now, {"send_titles_to_ai": False, "redact_external_names": True})
+    llm_brief(gw, snap, ev, "maya", now, {"send_titles_to_ai": False, "redact_external_names": True})
     private_prompt = msgs.calls[-1]["messages"][0]["content"]
     assert ev.title not in private_prompt and ev.description not in private_prompt and "withheld" in private_prompt
 
@@ -177,3 +177,109 @@ def test_template_brief_fits_meeting(snap, now) -> None:
     b = template_brief(snap, ev, "maya", now)
     assert sum(i.minutes for i in b.agenda) == 60
     assert b.prep_checklist and b.purpose.startswith("Customer")
+
+
+# --- Gemini fallback -------------------------------------------------------------------------------------
+GEMINI_OK = {
+    "candidates": [{"finishReason": "STOP", "content": {"parts": [
+        {"text": "planning...", "thought": True},
+        {"text": '{"action": "schedule_meeting", "attendees": ["Priya"], "duration_minutes": 30}'}]}}],
+    "usageMetadata": {"promptTokenCount": 120, "candidatesTokenCount": 40, "thoughtsTokenCount": 15},
+    "modelVersion": "gemini-3.1-flash-lite", "responseId": "resp_1",
+}
+
+
+class FakeTransport:
+    """Records requests; answers from a script of (status, payload) or raises."""
+
+    def __init__(self, *responses: Any) -> None:
+        self.responses = list(responses)
+        self.calls: list[dict[str, Any]] = []
+
+    def __call__(self, url: str, headers: dict[str, str], body: dict[str, Any], timeout: float) -> tuple[int, Any]:
+        self.calls.append({"url": url, "headers": headers, "body": body, "timeout": timeout})
+        r = self.responses.pop(0) if len(self.responses) > 1 else self.responses[0]
+        if isinstance(r, Exception):
+            raise r
+        return r
+
+
+def gemini(*responses: Any, **settings: Any) -> tuple[GeminiGateway, FakeTransport]:
+    t = FakeTransport(*responses)
+    return GeminiGateway(Settings(ai_mode="auto", gemini_api_key="test-key", **settings), transport=t), t
+
+
+def test_gemini_request_contract_and_parsing() -> None:
+    gw, t = gemini((200, GEMINI_OK))
+    parsed, meta = gw.structured(system="sys", prompt="hi", schema=ParsedCommand, effort="low", timeout_s=8, max_retries=0)
+    assert parsed.action == "schedule_meeting" and parsed.attendees == ["Priya"]
+    assert meta == {"engine": "gemini", "model": "gemini-3.1-flash-lite", "latency_ms": meta["latency_ms"],
+                    "input_tokens": 120, "output_tokens": 55, "request_id": "resp_1"}
+    call = t.calls[0]
+    assert call["url"].endswith("/models/gemini-3.1-flash-lite:generateContent")  # low effort -> fast model
+    assert "key" not in call["url"] and call["headers"]["x-goog-api-key"] == "test-key"  # key only in a header
+    cfg = call["body"]["generationConfig"]
+    assert cfg["responseMimeType"] == "application/json" and cfg["responseJsonSchema"] == ParsedCommand.model_json_schema()
+    assert "thinkingConfig" not in cfg and call["body"]["systemInstruction"]["parts"][0]["text"] == "sys"
+    assert 0 < call["timeout"] <= 8
+
+
+def test_gemini_writing_uses_main_model_and_falls_back_to_fast_model_when_busy() -> None:
+    brief = {"candidates": [{"finishReason": "STOP", "content": {"parts": [{"text": MeetingBrief(
+        purpose="QBR", context=[], agenda=[], talking_points=[], prep_checklist=[], watch_outs=[]).model_dump_json()}]}}]}
+    gw, t = gemini((503, {"error": {"message": "high demand"}}), (200, brief), gemini_model="gemini-3.5-flash")
+    parsed, meta = gw.structured(system="s", prompt="p", schema=MeetingBrief, effort="medium")
+    assert parsed.purpose == "QBR" and meta["model"] == "gemini-3.1-flash-lite"
+    assert [c["url"].split("/models/")[1] for c in t.calls] == ["gemini-3.5-flash:generateContent", "gemini-3.1-flash-lite:generateContent"]
+    assert t.calls[0]["body"]["generationConfig"]["thinkingConfig"] == {"thinkingLevel": "low"}
+
+
+def test_gemini_timeout_leaves_time_for_the_fast_model() -> None:
+    gw, t = gemini(TimeoutError("slow"), (200, GEMINI_OK))
+    parsed, meta = gw.structured(system="s", prompt="p", schema=ParsedCommand, effort="medium", timeout_s=20)
+    assert parsed.action == "schedule_meeting" and meta["model"] == "gemini-3.1-flash-lite"
+    first, second = t.calls
+    assert first["url"].split("/models/")[1].startswith("gemini-3.5-flash-lite") and first["timeout"] <= 12.1  # 60% of 20 s
+    assert second["url"].split("/models/")[1].startswith("gemini-3.1-flash-lite") and 5 < second["timeout"] <= 20
+
+
+@pytest.mark.parametrize(("response", "exc", "text"), [
+    ((200, {"promptFeedback": {"blockReason": "SAFETY"}}), AIRefused, "blocked"),
+    ((200, {"candidates": [{"finishReason": "SAFETY", "content": {"parts": []}}]}), AIRefused, "declined"),
+    ((200, {"candidates": [{"finishReason": "MAX_TOKENS", "content": {"parts": [{"text": "{"}]}}]}), AIUnavailable, "truncated"),
+    ((200, {"candidates": [{"finishReason": "STOP", "content": {"parts": [{"text": "not json"}]}}]}), AIUnavailable, "schema"),
+    ((403, {"error": {"message": "denied"}}), AIUnavailable, "GEMINI_API_KEY"),
+    ((404, {"error": {"message": "gone"}}), AIUnavailable, "not available"),
+    ((503, {"error": {"message": "busy"}}), AIUnavailable, "busy"),
+    (TimeoutError("slow"), AIUnavailable, "timeout"),
+])
+def test_gemini_failures_raise_typed_errors(response, exc, text) -> None:
+    gw, _ = gemini(response)
+    with pytest.raises(exc, match=text):
+        gw.structured(system="s", prompt="p", schema=ParsedCommand, effort="low", max_retries=0)
+
+
+def test_chain_uses_gemini_when_claude_fails_and_never_shops_a_refusal() -> None:
+    claude, msgs = fake_gateway("error")
+    gem, t = gemini((200, GEMINI_OK))
+    chain = AIGateway(claude.settings, [claude, gem])
+    parsed, meta = chain.structured(system="s", prompt="p", schema=ParsedCommand, effort="low", timeout_s=8, max_retries=0)
+    assert meta["engine"] == "gemini" and "Claude: network error" in meta["fallback_from"]
+    assert len(msgs.calls) == 1 and len(t.calls) == 1
+    refusing, _ = fake_gateway("refusal")
+    gem2, t2 = gemini((200, GEMINI_OK))
+    with pytest.raises(AIRefused):
+        AIGateway(refusing.settings, [refusing, gem2]).structured(system="s", prompt="p", schema=ParsedCommand)
+    assert t2.calls == []  # a refusal is a decision, not an outage
+
+
+def test_build_gateway_order_and_status() -> None:
+    both = build_gateway(Settings(ai_mode="auto", anthropic_api_key="a", gemini_api_key="g"))
+    assert both.name == "claude" and both.status()["fallbacks"] == ["gemini"]
+    assert "falls back to Gemini, then the offline engine" in both.status()["reason"]
+    only_gemini = build_gateway(Settings(ai_mode="auto", anthropic_api_key=None, gemini_api_key="g"))
+    assert only_gemini.available and only_gemini.name == "gemini" and only_gemini.model == "gemini-3.5-flash-lite"
+    forced = build_gateway(Settings(ai_mode="gemini", anthropic_api_key="a", gemini_api_key="g"))
+    assert forced.name == "gemini" and [e.name for e in forced.engines] == ["gemini"]
+    off = build_gateway(Settings(ai_mode="offline", anthropic_api_key="a", gemini_api_key="g"))
+    assert not off.available and off.status()["engine"] == "offline"

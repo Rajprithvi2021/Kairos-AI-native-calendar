@@ -44,7 +44,7 @@ export function DraftBox({ draft }: { draft: { subject: string; body: string } }
             const r = await api.post<{ subject: string; body: string; engine: string; note?: string }>("/api/ai/draft", text);
             setText({ subject: r.subject, body: r.body });
             setEngine(r.engine);
-            if (r.engine !== "claude") toast(r.note ?? "Claude isn't configured — kept the template (add a key in services/api/.env).", { tone: "info" });
+            if (r.engine === "template") toast(r.note ?? "No AI engine is available — kept the template (add ANTHROPIC_API_KEY or GEMINI_API_KEY in services/api/.env).", { tone: "info" });
           } finally { setBusy(false); }
         }}><Sparkles className="h-3.5 w-3.5" /> Polish with AI</Button>
       </div>

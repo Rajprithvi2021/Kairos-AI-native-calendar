@@ -11,7 +11,7 @@ import re
 from datetime import datetime, timedelta
 from typing import Any
 
-from app.ai.gateway import ClaudeGateway
+from app.ai.gateway import LLM
 from app.ai.privacy import event_title, fence_untrusted, person_label
 from app.ai.schemas import AgendaItem, MeetingBrief
 from app.domain.calendar_data import Ev, Snapshot
@@ -133,7 +133,7 @@ BRIEF_SYSTEM = (
 )
 
 
-def claude_brief(gw: ClaudeGateway, snap: Snapshot, ev: Ev, uid: str, now: datetime, privacy: dict[str, bool]) -> tuple[MeetingBrief, dict[str, Any]]:
+def llm_brief(gw: LLM, snap: Snapshot, ev: Ev, uid: str, now: datetime, privacy: dict[str, bool]) -> tuple[MeetingBrief, dict[str, Any]]:
     send_titles = privacy.get("send_titles_to_ai", True)
     facts = _facts(snap, ev, uid, now, privacy.get("redact_external_names", True), send_titles)
     # The description usually says more than the title, so the "no titles" setting withholds it too.

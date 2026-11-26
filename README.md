@@ -57,12 +57,13 @@ scripts/setup.sh && scripts/dev.sh
 docker compose -f infra/docker-compose.yml up --build
 ```
 
-### Turn on Claude (optional)
-Copy `.env.example` to `services/api/.env`, set `ANTHROPIC_API_KEY=…`, and restart the API.
+### Turn on an LLM (optional): Claude and/or Gemini
+Copy `.env.example` to `services/api/.env`, set `ANTHROPIC_API_KEY=…` and/or `GEMINI_API_KEY=…`, and restart the API. The file is git-ignored; never commit keys.
 
-- **Model:** `claude-opus-5-5`, with schema-constrained output and server-side refusal fallback enabled.
-- **Status:** the sidebar pill switches from **Offline AI** to **Claude**. Settings → *AI engine & activity log* shows every call (latency, tokens, outcome; never content).
-- **Quality check:** run `uv run python -m evals.run_evals --claude` in `services/api` to score Claude on the golden set.
+- **Order:** Claude first when it has a key, then Gemini, then the offline engine. Each step is taken automatically on errors, timeouts or overload. With only a Gemini key, Gemini runs everything.
+- **Models:** Claude `claude-opus-5-5` (schema-constrained output, server-side refusal fallback). Gemini `gemini-3.1-flash-lite` for parsing commands and `gemini-3.5-flash-lite` for briefs and drafts, both over the Gemini Developer API with JSON-schema output.
+- **Status:** the sidebar pill switches from **Offline AI** to **Claude** or **Gemini**. Settings → *AI engine & activity log* shows every call (engine, model, latency, tokens, outcome; never content).
+- **Quality check:** in `services/api`, run `uv run python -m evals.run_evals --claude` or `--gemini` to score an engine on the golden set. Measured on 26 Nov 2026, Gemini `gemini-3.1-flash-lite` got 84% of actions and 72% exact matches. Seven of its 14 misses were API errors or timeouts; in the app those fall back to the offline engine.
 
 ---
 
@@ -103,7 +104,7 @@ The full design covers algorithms, AI layer, privacy, the production architectur
 
 | Check | Result |
 |---|---|
-| Backend tests (`pytest`): engines, API, undo safety, what each privacy setting lets reach the model, AI-gateway contract with a fake SDK, Hypothesis property test that hard constraints are never violated | **70 passed** |
+| Backend tests (`pytest`): engines, API, undo safety, what each privacy setting lets reach the model, Claude and Gemini gateway contracts with fakes, Hypothesis property test that hard constraints are never violated | **83 passed** |
 | End-to-end flows (Playwright driving Microsoft Edge, 1440×900, browser in Asia/Kolkata to prove time-zone handling) | **10 passed** |
 | Web: `tsc`, ESLint (incl. React Compiler rules), Vitest (DST and layout), Next.js production build | **clean · 5 passed · builds** |
 | NL-command golden set (51 cases incl. a prompt-injection case), offline parser | 100% action accuracy *(written alongside the parser; held-out cases from user testing are the real test)* |
@@ -123,7 +124,7 @@ The full design covers algorithms, AI layer, privacy, the production architectur
 ```
 apps/web/            Next.js app (calendar, command bar, drawers, insights, settings, study mode)
 services/api/        FastAPI: app/engines (decisions), app/ai (Claude + offline twin), app/api (routes)
-  tests/  evals/     70 backend tests · NL golden set + runner
+  tests/  evals/     83 backend tests · NL golden set + runner
 tests/e2e/           Playwright flows (Edge) - also regenerates docs/screenshots
 docs/                01 research · 02 AI features · 03 prototype & flows · 04 architecture
                      05 user testing · 06 presentation · 07 agile roadmap · adr/

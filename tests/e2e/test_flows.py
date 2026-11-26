@@ -2,7 +2,8 @@
 
 The browser runs in Asia/Kolkata on purpose: the calendar must render in the *user's* time zone
 (San Francisco), not the browser's. Button locators use exact names (substring matching would
-hit calendar events such as "Sync: onboarding playbook" for "Book").
+hit calendar events such as "Sync: onboarding playbook" for "Book"). Assertions hold whichever AI engine
+the running API uses (offline twin, Claude or Gemini), so a key in services/api/.env doesn't break them.
 """
 
 from __future__ import annotations
@@ -39,7 +40,7 @@ def show_event(page: Page, event_id: str) -> Locator:
 def this_week_holidays() -> list[str]:
     """Holiday chips expected in the current week view (Monday-based, in the user's time zone)."""
     tz = ZoneInfo(api("GET", "/api/me")["person"]["timezone"])
-    now = datetime.fromisoformat(api("GET", "/api/health")["now"].replace("Z", "+00:00")).astimezone(tz)
+    now = datetime.fromisoformat(api("GET", "/api/health")["now"]).astimezone(tz)
     start = (now - timedelta(days=now.weekday())).replace(hour=0, minute=0, second=0, microsecond=0)
     q = urllib.parse.urlencode({"start": start.isoformat(), "end": (start + timedelta(days=7)).isoformat()})
     return [f"{h['name']} ({h['country']})" for h in api("GET", f"/api/events?{q}")["holidays"]]
@@ -68,10 +69,10 @@ def test_f6_f1_command_bar_schedule_book_and_undo(page: Page) -> None:
     box.press("Enter")
     expect(page.get_by_text("Best times for")).to_be_visible(timeout=20_000)
     expect(page.get_by_text("With: Dev Patel, Alex Kim")).to_be_visible()
-    expect(page.get_by_text("Offline engine")).to_be_visible()
+    expect(page.get_by_text(re.compile(r"^(Offline engine|Claude|Gemini)")).first).to_be_visible()
     shot(page, "command-bar")
     button(page, "Book").first.click()
-    expect(page.get_by_text(re.compile(r"^Booked “Sync: Dev / Alex”"))).to_be_visible()
+    expect(page.get_by_text(re.compile(r"^Booked “"))).to_be_visible()  # the title wording depends on the engine
     audit = api("GET", "/api/audit?limit=1")[0]
     assert audit["action"] == "book_meeting" and not audit["undone"]
     button(page, "Undo").click()
@@ -117,7 +118,7 @@ def test_f3_event_drawer_smart_reminders_brief_and_prep(page: Page) -> None:
     expect(drawer).to_be_visible()
     expect(drawer.get_by_text(re.compile(r"Leave by \d")).first).to_be_visible()
     expect(drawer.get_by_text("Palo Alto + 10 min buffer", exact=False)).to_be_visible()
-    expect(drawer.get_by_text("Renewal and expansion timeline", exact=False)).to_be_visible(timeout=20_000)
+    expect(drawer.get_by_text("Talking points", exact=True)).to_be_visible(timeout=30_000)  # brief rendered (any engine)
     shot(page, "event-drawer")
     drawer.get_by_label("followup reminder").uncheck()
     expect(drawer.get_by_label("followup reminder")).not_to_be_checked()

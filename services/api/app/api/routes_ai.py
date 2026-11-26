@@ -9,7 +9,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel
 from sqlmodel import Session, select
 
-from app.ai.gateway import ClaudeGateway
+from app.ai.gateway import LLM
 from app.api.deps import gateway_dep, http_errors, now_dep, session_dep
 from app.clock import parse_utc
 from app.domain.classify import categorize
@@ -222,7 +222,7 @@ def get_digest(day: str | None = None, session: Session = Depends(session_dep), 
 @router.get("/events/{event_id}/brief")
 @http_errors
 def brief(event_id: str, refresh: bool = False, session: Session = Depends(session_dep), now: datetime = Depends(now_dep),
-          gw: ClaudeGateway = Depends(gateway_dep)) -> dict[str, Any]:
+          gw: LLM = Depends(gateway_dep)) -> dict[str, Any]:
     return assistant.get_brief(session, event_id, now, gw, refresh)
 
 
@@ -348,7 +348,7 @@ class CommandBody(BaseModel):
 
 @router.post("/assistant/command")
 def command(body: CommandBody, session: Session = Depends(session_dep), now: datetime = Depends(now_dep),
-            gw: ClaudeGateway = Depends(gateway_dep)) -> dict[str, Any]:
+            gw: LLM = Depends(gateway_dep)) -> dict[str, Any]:
     text = body.text.strip()
     if not text:
         raise HTTPException(400, "empty command")
@@ -364,12 +364,12 @@ class DraftBody(BaseModel):
 
 @router.post("/ai/draft")
 def polish(body: DraftBody, session: Session = Depends(session_dep), now: datetime = Depends(now_dep),
-           gw: ClaudeGateway = Depends(gateway_dep)) -> dict[str, Any]:
+           gw: LLM = Depends(gateway_dep)) -> dict[str, Any]:
     return assistant.polish_draft(session, body.subject, body.body, now, gw)
 
 
 @router.get("/ai/status")
-def ai_status(session: Session = Depends(session_dep), gw: ClaudeGateway = Depends(gateway_dep)) -> dict[str, Any]:
+def ai_status(session: Session = Depends(session_dep), gw: LLM = Depends(gateway_dep)) -> dict[str, Any]:
     from app.models import AiCallLog
 
     rows = session.exec(select(AiCallLog).order_by(AiCallLog.id.desc()).limit(25)).all()  # type: ignore[union-attr]

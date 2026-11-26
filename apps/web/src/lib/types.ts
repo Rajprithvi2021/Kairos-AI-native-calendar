@@ -132,7 +132,7 @@ export type Preferences = {
   privacy: Record<string, boolean>; learned_weights: Record<string, number>; dismissed_conflicts: string[];
 };
 
-export type AiStatus = { engine: "claude" | "offline"; model: string | null; mode: string; reason: string };
+export type AiStatus = { engine: "claude" | "gemini" | "offline"; model: string | null; mode: string; reason: string; fallbacks?: string[] };
 
 export type Me = {
   person: Person; preferences: Preferences; ai: AiStatus;
