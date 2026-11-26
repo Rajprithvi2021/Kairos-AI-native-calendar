@@ -6,7 +6,7 @@
 
 ## Context
 
-Trust is the bottleneck, and people delegate what they can correct ([01 §10](../01-user-research.md), insight I5). Calendar changes affect other people. The research plan needs acceptance and undo rates ([05 §7](../05-user-testing-plan.md)), and the north star counts AI decisions that are *kept* ([07 §2](../07-agile-roadmap.md)).
+Trust is the bottleneck, and people delegate what they can correct ([01 §10](../01-user-research.md), insight I5). Calendar changes affect other people. The research plan needs acceptance and undo rates ([05 §7](../05-user-testing-plan.md)), and the north star counts AI decisions that are *kept* (07 §2).
 
 Writes come from many places: booking, conflict fixes, focus protection, defrag, recurring-series changes, ICS import and manual edits. Without one discipline, some of them would be impossible to explain or reverse.
 

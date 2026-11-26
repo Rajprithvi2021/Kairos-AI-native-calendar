@@ -1,7 +1,7 @@
 # 05 · User testing plan
 
 > **Status.** Plan v1, written 25 Nov 2026. Owned by the product designer / UX researcher together with the PM.
-> **Inputs.** The riskiest assumptions A1–A10 in [01 · User research](01-user-research.md) §11, and the release gates and sprints in [07 · Agile roadmap](07-agile-roadmap.md).
+> **Inputs.** The riskiest assumptions A1–A10 in [01 · User research](01-user-research.md) §11, and the release gates and sprints in 07 · Agile roadmap.
 > **Scope.** How we test Kairos with business users from concept to beta; what we measure; how findings change the design and the AI; and how we protect participants' data.
 
 ## 1. Goals
@@ -89,7 +89,7 @@ flowchart LR
   G -.-> C
 ```
 
-| Stage | Method | When ([07](07-agile-roadmap.md)) | n | Artefact | Answers |
+| Stage | Method | When (07) | n | Artefact | Answers |
 |---|---|---|---|---|---|
 | 1 | Concept tests | Sprint 0 (Dec 2026) | 8–10 | Low-fi board in `design/wireframes/` | Desirability of ranked slots, visible fairness, the autonomy dial, the meeting-cost label (A1, A2, A7) |
 | 2 | Wizard-of-Oz | Sprints 1–3 | 6–8 | Prototype with a hidden human operator | Comfort with autonomous moves, auto-declines and an email agent (A4, F11) |
@@ -260,7 +260,7 @@ Scenario: The person who pays for a slot is visible before booking
 ```
 
 - **Every AI failure → a new eval case.** We record the utterance (redacted), the expected structured output, the engine and the failure category: parse error, wrong constraint, ranking issue or unclear explanation. The case is added to the golden set in `services/api/evals/`, and CI blocks any change that regresses it.
-- **Decision log.** Each entry records the date, the decision, the evidence (session IDs, metrics), the alternatives considered, the owner and the re-test result. It is reviewed at every sprint review ([07](07-agile-roadmap.md)).
+- **Decision log.** Each entry records the date, the decision, the evidence (session IDs, metrics), the alternatives considered, the owner and the re-test result. It is reviewed at every sprint review (07).
 - **Re-testing.** Each round repeats T1–T5 as a regression benchmark and adds probes for anything new. A finding is closed only when the next round confirms the fix.
 
 ```mermaid
@@ -298,7 +298,7 @@ flowchart TD
 
 ## 12. Timeline
 
-Dates are indicative and move as a block if Sprint 0 slips. The sprint calendar is in [07](07-agile-roadmap.md).
+Dates are indicative and move as a block if Sprint 0 slips. The sprint calendar is in 07.
 
 ```mermaid
 gantt

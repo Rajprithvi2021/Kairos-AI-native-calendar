@@ -12,7 +12,7 @@ The backend needs, today or soon:
 - time-zone and holiday data (`zoneinfo` with `tzdata`, `holidays`) and iCalendar parsing (`icalendar`, `dateutil`);
 - property-based testing (Hypothesis) and statistics.
 
-The UI is a highly interactive calendar: a week grid in the user's zone, drawers, ghost previews, a keyboard-first command bar and charts. It needs a mainstream, typed web stack with good accessibility tooling. The team in [07 §8](../07-agile-roadmap.md) is full-stack engineers plus ML/AI engineers.
+The UI is a highly interactive calendar: a week grid in the user's zone, drawers, ghost previews, a keyboard-first command bar and charts. It needs a mainstream, typed web stack with good accessibility tooling. The team in 07 §8 is full-stack engineers plus ML/AI engineers.
 
 ## Decision
 

@@ -83,4 +83,4 @@ MoSCoW priority applies to the MVP; status is for this prototype.
   - Data retention and deletion.
   - A penetration test.
   - Google Workspace Marketplace review.
-- **Plan:** dual-track agile, from internal alpha to private beta with design partners to GA. See [docs/07-agile-roadmap.md](docs/07-agile-roadmap.md).
+- **Plan:** dual-track agile, from internal alpha to private beta with design partners to GA.

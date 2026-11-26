@@ -1,7 +1,7 @@
 # 02 · AI features
 
 > **Status.** Specs for F1–F11 as of 25 Nov 2026. F1–F8 run in the prototype (F7 lives in Insights; F8 is a simple version). F9–F11 are **design only** and are labelled that way wherever they appear. Every technique points to the code that implements it; algorithms and complexity are in [04 · Technical architecture](04-technical-architecture.md).
-> **Sources.** Pain points P1–P8 and jobs J1–J8 come from [01 · User research](01-user-research.md). Metric targets come from [05 · User testing plan](05-user-testing-plan.md) §7 and [07 · Agile roadmap](07-agile-roadmap.md) §12. Numbers marked *measured* come from the prototype running on synthetic Lumora data.
+> **Sources.** Pain points P1–P8 and jobs J1–J8 come from [01 · User research](01-user-research.md). Metric targets come from [05 · User testing plan](05-user-testing-plan.md) §7 and 07 · Agile roadmap §12. Numbers marked *measured* come from the prototype running on synthetic Lumora data.
 
 ## 1. Overview
 

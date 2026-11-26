@@ -13,7 +13,7 @@ Short records in the MADR style: **Context · Decision · Consequences · Altern
 
 ## Planned
 
-The Sprint 0 spikes in [07 §7](../07-agile-roadmap.md) each close with an ADR:
+The Sprint 0 spikes in 07 §7 each close with an ADR:
 - Google push notifications and incremental sync.
 - Microsoft Graph delta queries and webhooks.
 - OR-Tools CP-SAT against the current engine at team scale.

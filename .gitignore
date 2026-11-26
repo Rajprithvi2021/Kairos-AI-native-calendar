@@ -42,3 +42,7 @@ desktop.ini
 services/api/evals/reports/
 apps/web/AGENTS.md
 .claude/
+
+# --- Internal planning docs: kept on this machine only, never pushed ---
+docs/06-presentation.md
+docs/07-agile-roadmap.md

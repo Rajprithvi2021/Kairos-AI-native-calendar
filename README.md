@@ -137,8 +137,8 @@ infra/  scripts/     Docker Compose · setup/dev/test scripts (PowerShell + bash
 3. [Prototype & user flows](docs/03-prototype-and-flows.md), plus the [wireframe board](design/wireframes/index.html).
 4. [Technical architecture](docs/04-technical-architecture.md) and [ADRs](docs/adr/).
 5. [User testing plan](docs/05-user-testing-plan.md).
-6. [Final presentation](docs/06-presentation.md).
-7. [Agile roadmap](docs/07-agile-roadmap.md).
+
+The presentation notes (06) and the agile roadmap (07) are internal and not published in this repository.
 
 Also: [What is required](REQUIREMENTS.md).
 

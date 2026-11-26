@@ -17,7 +17,7 @@
 | # | Goal | Decision it informs |
 |---|---|---|
 | G1 | Validate pains P1–P8 and rank their severity for each persona | Which features ship first (F1–F11) |
-| G2 | Measure behavioural baselines: time-to-schedule, back-and-forth, focus hours, after-hours load, conflict rate | Targets in [05](05-user-testing-plan.md) and the OKRs in [07](07-agile-roadmap.md) |
+| G2 | Measure behavioural baselines: time-to-schedule, back-and-forth, focus hours, after-hours load, conflict rate | Targets in [05](05-user-testing-plan.md) and the OKRs in 07 |
 | G3 | Map trust boundaries: what people let an AI do to their calendar, and at which autonomy level | Defaults for the autonomy dial |
 | G4 | Map privacy thresholds: what calendar data users and admins will share with Kairos and with an LLM | Data-minimisation design, enterprise readiness |
 | G5 | Confirm the table-stakes features without which business users won't switch | MVP scope, release plan |
@@ -221,7 +221,7 @@ Without these, business users won't switch, however good the AI is.
 
 ## 11. Riskiest assumptions to test
 
-Ordered by risk (impact × uncertainty). Methods and sample sizes are in [05](05-user-testing-plan.md); release gates are in [07](07-agile-roadmap.md).
+Ordered by risk (impact × uncertainty). Methods and sample sizes are in [05](05-user-testing-plan.md); release gates are in 07.
 
 | ID | We believe… | Type | Evidence today | Test | Proceed if | Rethink if |
 |---|---|---|---|---|---|---|

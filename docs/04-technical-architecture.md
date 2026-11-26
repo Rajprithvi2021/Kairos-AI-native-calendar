@@ -1,7 +1,7 @@
 # 04 · Technical architecture
 
 > **Status.** Sections 1–6 and 8–11 describe the prototype **as built** and verified on 25 Nov 2026 (Windows 11, this repository). Section 7 is the **production target: design, not built**. Decisions are recorded as ADRs in [adr/](adr/README.md).
-> **Related.** [02 · AI features](02-ai-features.md) (what each feature does and why) · [03 · Prototype and flows](03-prototype-and-flows.md) (screens and interaction design) · [07 · Agile roadmap](07-agile-roadmap.md) (when each production piece lands).
+> **Related.** [02 · AI features](02-ai-features.md) (what each feature does and why) · [03 · Prototype and flows](03-prototype-and-flows.md) (screens and interaction design) · 07 · Agile roadmap (when each production piece lands).
 
 ## 1. Goals and non-functional requirements
 
@@ -408,7 +408,7 @@ What each task sends, and what it never sends, is listed in [02 §1](02-ai-featu
 
 ## 7. Production target architecture (design)
 
-> Nothing in this section is built. It is the target for the roadmap in [07](07-agile-roadmap.md); the Sprint 0 spikes (Google sync, Graph sync, CP-SAT, the CI eval harness, the injection threat model) each close with an ADR.
+> Nothing in this section is built. It is the target for the roadmap in 07; the Sprint 0 spikes (Google sync, Graph sync, CP-SAT, the CI eval harness, the injection threat model) each close with an ADR.
 
 ### 7.1 Overview
 
