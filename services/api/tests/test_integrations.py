@@ -46,6 +46,23 @@ def test_ics_exdate_moved_and_cancelled_occurrences(world, now) -> None:
     assert events[1]["external_ref"] == "ics:s1:2026-12-14T18:00:00+00:00"  # keeps the replaced occurrence's identity
 
 
+def test_ics_floating_until_and_bad_recurrence_do_not_abort_the_import(world, now) -> None:
+    raw = (
+        b"BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//t//EN\r\n"
+        # floating DTSTART with a floating UNTIL: valid RFC 5545, rejected by a naive dateutil call
+        b"BEGIN:VEVENT\r\nUID:f1\r\nSUMMARY:Floating weekly\r\nDTSTART:20261130T100000\r\nDTEND:20261130T110000\r\n"
+        b"RRULE:FREQ=WEEKLY;UNTIL=20261221T100000\r\nEND:VEVENT\r\n"
+        b"BEGIN:VEVENT\r\nUID:b1\r\nSUMMARY:Broken rule\r\nDTSTART:20261201T100000\r\nDTEND:20261201T110000\r\n"
+        b"RRULE:FREQ=SOMETIMES\r\nEND:VEVENT\r\n"
+        b"BEGIN:VEVENT\r\nUID:o1\r\nSUMMARY:One-off\r\nDTSTART:20261202T150000Z\r\nDTEND:20261202T160000Z\r\nEND:VEVENT\r\n"
+        b"END:VCALENDAR\r\n"
+    )
+    events = ics.parse_ics(raw, "maya", _people(world), now)
+    titles = sorted(e["title"] for e in events)
+    assert titles == ["Floating weekly"] * 4 + ["One-off"]  # 30 Nov .. 21 Dec; the broken series is skipped
+    assert sorted(e["start"].hour for e in events if e["title"] == "Floating weekly") == [18] * 4  # 10:00 PST
+
+
 def test_google_event_mapping(world) -> None:
     by_email = {p.email.lower(): p.id for p in world.people}
     item = {

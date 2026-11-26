@@ -97,6 +97,19 @@ def test_routine_meetings_are_silent(snap, now) -> None:
     assert plan and all(r.suppressed and not r.enabled for r in plan)
 
 
+def test_quiet_hours_with_and_without_midnight_wrap(snap) -> None:
+    prefs = snap.pref("maya")
+    at = lambda hhmm: parse_utc(f"2026-12-01T{hhmm}:00Z")  # noqa: E731  (UTC; Maya is UTC-8)
+    assert reminders._in_quiet_hours(at("05:00"), snap, "maya")  # 21:00 PST, default 20:00-07:30
+    assert not reminders._in_quiet_hours(at("20:00"), snap, "maya")  # 12:00 PST
+    prefs.quiet_start, prefs.quiet_end = "12:00", "13:00"  # a lunch window that does not wrap midnight
+    try:
+        assert reminders._in_quiet_hours(at("20:30"), snap, "maya")  # 12:30 PST
+        assert not reminders._in_quiet_hours(at("17:00"), snap, "maya")  # 09:00 PST
+    finally:
+        prefs.quiet_start, prefs.quiet_end = "20:00", "07:30"
+
+
 def test_upcoming_and_digest(snap, now) -> None:
     up = reminders.upcoming(snap, "maya", now, 24 * 7)
     assert up and all(r.enabled and not r.suppressed for r in up)

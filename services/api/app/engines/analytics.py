@@ -177,7 +177,7 @@ def collaborators(snap: Snapshot, uid: str, now: datetime, days: int = 28) -> li
     totals: dict[str, float] = defaultdict(float)
     for m in snap.events_for(uid, now - timedelta(days=days), now, ("meeting",)):
         for p in m.participant_ids():
-            if p != uid and m.attending(p):
+            if p != uid and p in snap.people and m.attending(p):
                 totals[p] += m.minutes / 60
     out = []
     for pid, h in sorted(totals.items(), key=lambda kv: -kv[1])[:8]:

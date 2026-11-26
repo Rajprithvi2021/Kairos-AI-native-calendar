@@ -529,7 +529,7 @@ Topics: `calendar.changed` (normalised provider deltas), `proposal.applied` and 
 | Engines | pytest, Hypothesis | Scheduler 9 (including the property test), conflicts and reminders 7, analytics, forecast and focus 7, time utilities 4 | Pass |
 | AI layer | pytest with a fake SDK client | Offline parser 13, gateway contract and failure modes 5, offline mode, fallback through the API (including the 8 s parse budget and the logged request id), privacy helpers, what the brief and draft prompts may contain under each privacy setting, template brief | Pass |
 | API and integrations | FastAPI TestClient on the seeded world | Every feature's HTTP surface 13; undo safety (refuses to overwrite a later change, always bumps the version, restores only its own dismissal); ICS (recurrence, EXDATE, moved and cancelled occurrences) and Google mapping 3 | Pass |
-| **Backend total** | | **67 tests**; ruff clean | **67 passed** |
+| **Backend total** | | **70 tests**; ruff clean | **70 passed** |
 | NL evals | `evals/run_evals.py` | 51 golden commands; CI gate at ≥ 90% | Offline: 100% action accuracy, 100% exact match |
 | Frontend unit | Vitest | Overlap layout 2; time-zone and DST maths 3 | 5 passed; tsc and ESLint clean; production build succeeds |
 | End to end | Playwright with the installed Microsoft Edge, headless, 1440×900, browser zone Asia/Kolkata | F1–F7, Settings, change history (undo after the toast is gone) and Study mode through the real UI and API; fails on any uncaught page error; recaptures `docs/screenshots` | 10 passed |

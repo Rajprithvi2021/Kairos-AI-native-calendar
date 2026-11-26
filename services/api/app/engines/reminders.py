@@ -91,7 +91,9 @@ def _in_quiet_hours(dt: datetime, snap: Snapshot, uid: str) -> bool:
     prefs = snap.pref(uid)
     t = to_local(dt, snap.person(uid).timezone).time()
     qs, qe = parse_hhmm(prefs.quiet_start), parse_hhmm(prefs.quiet_end)
-    return t >= qs or t < qe
+    if qs <= qe:  # e.g. 12:00-13:00
+        return qs <= t < qe
+    return t >= qs or t < qe  # wraps midnight, e.g. 20:00-07:30
 
 
 def plan_event(snap: Snapshot, ev: Ev, uid: str, now: datetime, overrides: dict[str, Any] | None = None) -> list[PlannedReminder]:

@@ -46,6 +46,17 @@ def _recurrence_id(comp: Any, tzname: str) -> datetime | None:
     return _aware(rid.dt, tzname).astimezone(UTC) if rid is not None and isinstance(rid.dt, datetime) else None
 
 
+def _expand(rule_text: str, start: datetime) -> Any:
+    """Occurrences of an RRULE as aware datetimes. dateutil insists that UNTIL and DTSTART agree on being
+    zoned or floating; exporters disagree (RFC 5545 allows a floating UNTIL with a floating DTSTART), so try the
+    zoned form first and fall back to wall-clock expansion in the event's own zone."""
+    try:
+        return iter(rrulestr(rule_text, dtstart=start))
+    except ValueError:
+        naive = rrulestr(rule_text, dtstart=start.replace(tzinfo=None))  # may raise: caller skips the event
+        return (occ.replace(tzinfo=start.tzinfo) for occ in naive)
+
+
 def parse_ics(raw: bytes, uid: str, people: dict[str, Any], now: datetime) -> list[dict[str, Any]]:
     try:
         cal = Calendar.from_ical(raw)
@@ -85,7 +96,10 @@ def parse_ics(raw: bytes, uid: str, people: dict[str, Any], now: datetime) -> li
         rid = _recurrence_id(comp, user_tz)
         starts = [start]
         if comp.get("RRULE") is not None and rid is None:
-            rule = rrulestr("RRULE:" + comp.get("RRULE").to_ical().decode(), dtstart=start)
+            try:
+                rule = _expand("RRULE:" + comp.get("RRULE").to_ical().decode(), start)
+            except ValueError:
+                continue  # an unreadable recurrence skips this event, not the whole file
             excluded = _instants(comp.get("EXDATE"), user_tz)
             starts = []
             for occ in rule:

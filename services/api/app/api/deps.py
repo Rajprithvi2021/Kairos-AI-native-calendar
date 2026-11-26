@@ -15,7 +15,7 @@ from app.ai.gateway import ClaudeGateway
 from app.clock import clock
 from app.config import get_settings
 from app.db import get_engine
-from app.services.ops import OpError, VersionConflict
+from app.services.ops import VersionConflict
 
 _gateway: ClaudeGateway | None = None
 
@@ -45,7 +45,7 @@ def set_gateway(gw: ClaudeGateway | None) -> None:
 def _translate(e: Exception) -> HTTPException:
     if isinstance(e, VersionConflict):
         return HTTPException(409, str(e))
-    if isinstance(e, OpError):
+    if isinstance(e, ValueError):  # OpError, unparseable or offset-less timestamps
         return HTTPException(400, str(e))
     return HTTPException(404, f"not found: {e}")
 
@@ -58,7 +58,7 @@ def http_errors(fn: Callable[..., Any]) -> Callable[..., Any]:
         async def awrapper(*args: Any, **kwargs: Any) -> Any:
             try:
                 return await fn(*args, **kwargs)
-            except (OpError, KeyError) as e:
+            except (ValueError, KeyError) as e:
                 raise _translate(e) from e
 
         return awrapper
@@ -67,7 +67,7 @@ def http_errors(fn: Callable[..., Any]) -> Callable[..., Any]:
     def wrapper(*args: Any, **kwargs: Any) -> Any:
         try:
             return fn(*args, **kwargs)
-        except (OpError, KeyError) as e:
+        except (ValueError, KeyError) as e:
             raise _translate(e) from e
 
     return wrapper
