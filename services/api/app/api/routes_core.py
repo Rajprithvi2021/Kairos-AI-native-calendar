@@ -95,6 +95,7 @@ def people(session: Session = Depends(session_dep)) -> list[dict[str, Any]]:
 
 # --- events --------------------------------------------------------------------------------------
 @router.get("/events")
+@http_errors
 def list_events(
     start: str = Query(..., description="ISO datetime (UTC)"),
     end: str = Query(..., description="ISO datetime (UTC)"),
@@ -180,6 +181,7 @@ class ClockBody(BaseModel):
 
 
 @router.post("/demo/clock")
+@http_errors
 def demo_clock(body: ClockBody) -> dict[str, Any]:
     if body.now:
         clock.freeze(parse_utc(body.now))

@@ -57,7 +57,10 @@ class OpsBody(BaseModel):
 @router.post("/operations")
 @http_errors
 def apply_ops(body: OpsBody, session: Session = Depends(session_dep), now: datetime = Depends(now_dep)) -> dict[str, Any]:
-    entry = ops.apply_operations(session, body.operations, action=body.action, summary=body.summary, now=now)
+    try:
+        entry = ops.apply_operations(session, body.operations, action=body.action, summary=body.summary, now=now)
+    except KeyError as e:  # a malformed operation is a bad request, not a missing resource
+        raise ops.OpError(f"malformed operation: missing {e}") from e
     ops.track(session, "proposal_applied", now, {"kind": body.action})
     return {"audit_id": entry.id, "summary": entry.summary}
 

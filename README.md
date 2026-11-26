@@ -103,7 +103,7 @@ The full design covers algorithms, AI layer, privacy, the production architectur
 
 | Check | Result |
 |---|---|
-| Backend tests (`pytest`): engines, API, undo safety, what each privacy setting lets reach the model, AI-gateway contract with a fake SDK, Hypothesis property test that hard constraints are never violated | **67 passed** |
+| Backend tests (`pytest`): engines, API, undo safety, what each privacy setting lets reach the model, AI-gateway contract with a fake SDK, Hypothesis property test that hard constraints are never violated | **70 passed** |
 | End-to-end flows (Playwright driving Microsoft Edge, 1440×900, browser in Asia/Kolkata to prove time-zone handling) | **10 passed** |
 | Web: `tsc`, ESLint (incl. React Compiler rules), Vitest (DST and layout), Next.js production build | **clean · 5 passed · builds** |
 | NL-command golden set (51 cases incl. a prompt-injection case), offline parser | 100% action accuracy *(written alongside the parser; held-out cases from user testing are the real test)* |
@@ -123,7 +123,7 @@ The full design covers algorithms, AI layer, privacy, the production architectur
 ```
 apps/web/            Next.js app (calendar, command bar, drawers, insights, settings, study mode)
 services/api/        FastAPI: app/engines (decisions), app/ai (Claude + offline twin), app/api (routes)
-  tests/  evals/     67 backend tests · NL golden set + runner
+  tests/  evals/     70 backend tests · NL golden set + runner
 tests/e2e/           Playwright flows (Edge) - also regenerates docs/screenshots
 docs/                01 research · 02 AI features · 03 prototype & flows · 04 architecture
                      05 user testing · 06 presentation · 07 agile roadmap · adr/

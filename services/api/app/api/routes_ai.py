@@ -85,6 +85,10 @@ class BookBody(BaseModel):
 @http_errors
 def book(body: BookBody, session: Session = Depends(session_dep), now: datetime = Depends(now_dep)) -> dict[str, Any]:
     uid = user_id()
+    known = load_people(session)
+    unknown = [a for a in body.attendee_ids + body.optional_ids if a not in known]
+    if unknown:
+        raise HTTPException(400, f"unknown people: {unknown}")
     s, e = parse_utc(body.start), parse_utc(body.end)
     snap = load_snapshot(session, s - timedelta(days=1), e + timedelta(days=1))
     required = [uid, *body.attendee_ids]

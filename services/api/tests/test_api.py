@@ -124,6 +124,15 @@ def test_undo_never_clobbers_later_edits_and_always_bumps_the_version(client) ->
     assert client.post(f"/api/audit/{d2.json()['audit_id']}/undo").status_code == 200
 
 
+def test_bad_input_is_a_400_not_a_crash(client) -> None:
+    r = client.post("/api/schedule/book", json={"title": "x", "start": "2026-12-01T17:00:00Z", "end": "2026-12-01T17:30:00Z",
+                                                 "attendee_ids": ["ghost"]})
+    assert r.status_code == 400 and "ghost" in r.text
+    assert client.get("/api/analytics/summary").status_code == 200
+    assert client.get("/api/events", params={"start": "2026-11-30T00:00:00", "end": "2026-12-01T00:00:00"}).status_code == 400
+    assert client.post("/api/operations", json={"operations": [{"op": "create"}]}).status_code == 400
+
+
 def test_f3_reminders_toggle_digest_and_brief(client) -> None:
     plan = client.get("/api/events/plant_onsite/reminders").json()["reminders"]
     kinds = {r["kind"] for r in plan}
