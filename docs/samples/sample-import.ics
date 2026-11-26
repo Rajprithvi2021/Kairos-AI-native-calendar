@@ -1,0 +1,42 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Kairos//Sample import for review//EN
+CALSCALE:GREGORIAN
+BEGIN:VEVENT
+UID:kairos-sample-partner-sync
+SUMMARY:Partner pipeline sync
+DESCRIPTION:Weekly partner pipeline review. Sample file: 24 Dec is deleted (EXDATE) and 17 Dec is moved to Friday 18 Dec.
+DTSTART;TZID=America/Los_Angeles:20261203T090000
+DTEND;TZID=America/Los_Angeles:20261203T093000
+RRULE:FREQ=WEEKLY;COUNT=6
+EXDATE;TZID=America/Los_Angeles:20261224T090000
+ORGANIZER:mailto:alex@lumora.example
+ATTENDEE:mailto:maya@lumora.example
+ATTENDEE:mailto:dev@lumora.example
+END:VEVENT
+BEGIN:VEVENT
+UID:kairos-sample-partner-sync
+RECURRENCE-ID;TZID=America/Los_Angeles:20261217T090000
+SUMMARY:Partner pipeline sync (moved)
+DTSTART;TZID=America/Los_Angeles:20261218T100000
+DTEND;TZID=America/Los_Angeles:20261218T103000
+ORGANIZER:mailto:alex@lumora.example
+ATTENDEE:mailto:maya@lumora.example
+ATTENDEE:mailto:dev@lumora.example
+END:VEVENT
+BEGIN:VEVENT
+UID:kairos-sample-board-deck
+SUMMARY:Board deck review
+DTSTART;TZID=America/Los_Angeles:20261208T140000
+DTEND;TZID=America/Los_Angeles:20261208T150000
+LOCATION:Lumora HQ, San Francisco
+ORGANIZER:mailto:maya@lumora.example
+ATTENDEE:mailto:jordan@lumora.example
+END:VEVENT
+BEGIN:VEVENT
+UID:kairos-sample-offsite
+SUMMARY:Company offsite (all day)
+DTSTART;VALUE=DATE:20261211
+DTEND;VALUE=DATE:20261212
+END:VEVENT
+END:VCALENDAR
