@@ -80,3 +80,16 @@ def test_google_event_mapping(world) -> None:
     assert google_calendar.to_kairos_event({**item, "start": {"date": "2026-12-02"}}, "maya", by_email) is None
     focus = google_calendar.to_kairos_event({**item, "eventType": "focusTime"}, "maya", by_email)
     assert focus and focus["kind"] == "focus"
+
+
+def test_postgres_urls_from_neon_or_ci_use_pg8000_with_the_right_tls() -> None:
+    from app.db import postgres_url
+
+    neon = "postgresql://kairos:pw@ep-cool-name-123456.ap-southeast-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require"
+    url, args = postgres_url(neon)
+    assert url.drivername == "postgresql+pg8000" and url.host.endswith("neon.tech") and url.database == "neondb"
+    assert dict(url.query) == {} and args["ssl_context"].verify_mode.name == "CERT_REQUIRED"
+    heroku_style, args2 = postgres_url("postgres://u:p@db.example.com:5433/app")
+    assert heroku_style.drivername == "postgresql+pg8000" and heroku_style.port == 5433 and "ssl_context" in args2
+    local, args3 = postgres_url("postgresql://postgres:postgres@localhost:5432/kairos?sslmode=disable")
+    assert local.drivername == "postgresql+pg8000" and args3 == {}

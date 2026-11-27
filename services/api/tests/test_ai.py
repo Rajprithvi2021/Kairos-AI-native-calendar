@@ -283,3 +283,13 @@ def test_build_gateway_order_and_status() -> None:
     assert forced.name == "gemini" and [e.name for e in forced.engines] == ["gemini"]
     off = build_gateway(Settings(ai_mode="offline", anthropic_api_key="a", gemini_api_key="g"))
     assert not off.available and off.status()["engine"] == "offline"
+
+
+def test_hourly_ai_cap_falls_back_to_offline_beyond_the_limit() -> None:
+    gem, t = gemini((200, GEMINI_OK))
+    capped = AIGateway(Settings(ai_mode="auto", gemini_api_key="g", ai_max_calls_per_hour=2), [gem])
+    for _ in range(2):
+        capped.structured(system="s", prompt="p", schema=ParsedCommand, effort="low", max_retries=0)
+    with pytest.raises(AIUnavailable, match="hourly AI call limit"):
+        capped.structured(system="s", prompt="p", schema=ParsedCommand, effort="low", max_retries=0)
+    assert len(t.calls) == 2  # the third request never left the process

@@ -1,7 +1,8 @@
 import type { NextConfig } from "next";
 
 // The browser only talks to this origin; /api/* is proxied to the FastAPI service (no CORS needed).
-const API_URL = process.env.KAIROS_API_URL ?? "http://127.0.0.1:8000";
+// Rewrites are resolved at build time, so set KAIROS_API_URL before `next build` (e.g. on Render).
+const API_URL = (process.env.KAIROS_API_URL || "http://127.0.0.1:8000").replace(/\/+$/, "");
 
 const nextConfig: NextConfig = {
   cacheComponents: true,

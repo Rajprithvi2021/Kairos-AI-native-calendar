@@ -23,6 +23,9 @@ class Settings(BaseSettings):
     model: str = "claude-opus-5-5"
     ai_timeout_s: float = 25.0  # briefs and drafts (one retry)
     ai_parse_timeout_s: float = 8.0  # command parsing: no retry, fall back to the offline parse quickly
+    # Cap on LLM calls per rolling hour (0 = unlimited). On a public deployment this protects the API quota:
+    # beyond the cap, every feature quietly uses the offline engine.
+    ai_max_calls_per_hour: int = 0
     anthropic_api_key: SecretStr | None = Field(default=None, validation_alias="ANTHROPIC_API_KEY")
     # Google Gemini (Gemini Developer API): used when there is no Claude key, and as Claude's fallback.
     gemini_api_key: SecretStr | None = Field(default=None, validation_alias=AliasChoices("GEMINI_API_KEY", "GOOGLE_API_KEY"))

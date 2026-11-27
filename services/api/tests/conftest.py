@@ -13,7 +13,8 @@ import pytest
 FIXED_NOW = "2026-11-25T17:00:00Z"  # Wed 25 Nov 2026, 09:00 in San Francisco (day before US Thanksgiving)
 
 _tmp = Path(tempfile.mkdtemp(prefix="kairos-test-"))
-os.environ["KAIROS_DATABASE_URL"] = f"sqlite:///{(_tmp / 'test.db').as_posix()}"
+# KAIROS_TEST_DATABASE_URL runs the suite against Postgres (CI does); default is a throwaway SQLite file.
+os.environ["KAIROS_DATABASE_URL"] = os.environ.get("KAIROS_TEST_DATABASE_URL") or f"sqlite:///{(_tmp / 'test.db').as_posix()}"
 os.environ["KAIROS_NOW"] = FIXED_NOW
 os.environ["KAIROS_AI_MODE"] = "offline"
 os.environ.pop("ANTHROPIC_API_KEY", None)

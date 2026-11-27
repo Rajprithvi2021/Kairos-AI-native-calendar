@@ -21,9 +21,11 @@ from __future__ import annotations
 
 import json
 import os
+import threading
 import time
 import urllib.error
 import urllib.request
+from collections import deque
 from collections.abc import Callable
 from typing import Any, Protocol, TypeVar
 
@@ -302,6 +304,22 @@ class AIGateway:
     def __init__(self, settings: Settings, engines: list[Any]) -> None:
         self.settings = settings
         self.engines = engines
+        self._calls: deque[float] = deque()
+        self._lock = threading.Lock()
+
+    def _within_budget(self) -> bool:
+        """Rolling-hour cap on LLM calls (KAIROS_AI_MAX_CALLS_PER_HOUR); 0 means unlimited."""
+        limit = self.settings.ai_max_calls_per_hour
+        if limit <= 0:
+            return True
+        now = time.monotonic()
+        with self._lock:
+            while self._calls and now - self._calls[0] >= 3600:
+                self._calls.popleft()
+            if len(self._calls) >= limit:
+                return False
+            self._calls.append(now)
+            return True
 
     def _live(self) -> list[Any]:
         return [e for e in self.engines if e.available]
@@ -333,6 +351,8 @@ class AIGateway:
                 "fallbacks": [e.name for e in live[1:]]}
 
     def structured(self, *, timeout_s: float | None = None, **kwargs: Any) -> tuple[Any, dict[str, Any]]:
+        if self._live() and not self._within_budget():
+            raise AIUnavailable(f"hourly AI call limit ({self.settings.ai_max_calls_per_hour}) reached")
         deadline = None if timeout_s is None else time.monotonic() + timeout_s
         errors: list[str] = []
         for engine in self._live():

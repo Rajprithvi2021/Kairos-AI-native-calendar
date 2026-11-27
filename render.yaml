@@ -1,0 +1,43 @@
+# Render Blueprint: Kairos as two free web services (API + web app). The database is Neon Postgres.
+# Deploy: Render dashboard -> New -> Blueprint -> pick this repository. Step-by-step: docs/DEPLOY.md
+services:
+  # FastAPI backend: engines, AI gateway (Claude -> Gemini -> offline), Postgres via KAIROS_DATABASE_URL.
+  - type: web
+    name: kairos-ai-calendar-api
+    runtime: python
+    plan: free
+    region: singapore # keep it in the same region as your Neon project
+    rootDir: services/api
+    buildFilter:
+      paths: ["services/api/**"]
+    buildCommand: pip install uv && python -m uv sync --frozen --no-dev
+    startCommand: .venv/bin/python -m uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /api/health
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.10
+      - key: KAIROS_DATABASE_URL # Neon connection string (postgresql://...?sslmode=require)
+        sync: false
+      - key: GEMINI_API_KEY # optional: without it (and without ANTHROPIC_API_KEY) the offline engine runs everything
+        sync: false
+      - key: KAIROS_AI_MAX_CALLS_PER_HOUR # protects your API quota on a public URL; beyond it, offline engine
+        value: "120"
+
+  # Next.js web app: proxies /api/* to the API, so the browser never talks to the API directly (no CORS).
+  - type: web
+    name: kairos-ai-calendar
+    runtime: node
+    plan: free
+    region: singapore
+    rootDir: apps/web
+    buildFilter:
+      paths: ["apps/web/**"]
+    buildCommand: npm ci && npm run build
+    startCommand: npx next start -p $PORT
+    envVars:
+      - key: NODE_VERSION
+        value: "24"
+      - key: NEXT_TELEMETRY_DISABLED
+        value: "1"
+      - key: KAIROS_API_URL # the API service's URL, e.g. https://kairos-ai-calendar-api.onrender.com (read at build time)
+        sync: false
